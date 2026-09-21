@@ -44,7 +44,7 @@ services:
       - key: CACHE_DIR
         value: /var/data/cache
 
-      # The deployed frontend's origin. Set this to the real URL once the
-      # frontend is up, or the browser will block every request.
+      # The deployed frontend's origin. Without this the browser blocks every
+      # request from the Vercel frontend to this API.
       - key: CORS_ORIGINS
-        sync: false
+        value: https://scraper-frontend-sooty.vercel.app
