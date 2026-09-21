@@ -1,0 +1,50 @@
+# Render Blueprint for the collector API.
+#
+# In Render: New -> Blueprint -> point it at this repo. Render reads this file
+# and creates the service, or set the same values by hand with New -> Web Service.
+
+services:
+  - type: web
+    name: listing-collector-api
+    runtime: python
+    # This file sits at the repo root, so no rootDir is needed. If the backend
+    # is ever nested inside a larger repo, set rootDir to that folder.
+
+    buildCommand: pip install -r requirements.txt
+    # Render supplies $PORT; binding to 0.0.0.0 is what makes the service
+    # reachable from outside the container.
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+
+    # A collection runs as a background thread inside this process, so there
+    # must be exactly one instance. Two would start two runs at once and
+    # hammer the target sites.
+    numInstances: 1
+
+    # Free instances sleep when idle and have no disk, which loses the
+    # database. Starter is the lowest tier that works for this.
+    plan: starter
+
+    healthCheckPath: /api/health
+
+    disk:
+      name: collector-data
+      mountPath: /var/data
+      sizeGB: 1
+
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+
+      # Storage lives on the mounted disk, not in the checkout - a deploy
+      # replaces the checkout and would otherwise wipe the database.
+      - key: DATABASE_PATH
+        value: /var/data/listings.db
+      - key: EXPORT_DIR
+        value: /var/data/exports
+      - key: CACHE_DIR
+        value: /var/data/cache
+
+      # The deployed frontend's origin. Set this to the real URL once the
+      # frontend is up, or the browser will block every request.
+      - key: CORS_ORIGINS
+        sync: false

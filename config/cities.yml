@@ -1,0 +1,126 @@
+# ---------------------------------------------------------------------------
+# Target cities.
+#
+# This file is the ONLY place cities are defined - nothing is hard-coded in the
+# scrapers. Add a city by appending a block, remove one by deleting it or
+# setting `enabled: false`.
+#
+# Per-site identifiers:
+#   olx_location_id  - OLX's numeric location id. Leave null and it is resolved
+#                      automatically on first run, then cached in
+#                      .cache/locations.json.
+#   zameen_slug      - Zameen's "<City>-<id>" path segment. Leave null to
+#                      auto-resolve and cache the same way.
+#   pakwheels_slug   - PakWheels uses a plain lowercase city slug in its URLs,
+#                      so this is derived from `name` unless overridden here.
+#
+# Auto-resolved values are looked up live and cached - never guessed. If a
+# lookup fails, that city is skipped for that source with a warning rather
+# than silently collecting the wrong location.
+# ---------------------------------------------------------------------------
+
+cities:
+  - name: Lahore
+    enabled: true
+    province: Punjab
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Karachi
+    enabled: true
+    province: Sindh
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Islamabad
+    enabled: true
+    province: Islamabad Capital Territory
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Rawalpindi
+    enabled: true
+    province: Punjab
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Faisalabad
+    enabled: true
+    province: Punjab
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Multan
+    enabled: true
+    province: Punjab
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Peshawar
+    enabled: true
+    province: Khyber Pakhtunkhwa
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Gujranwala
+    enabled: true
+    province: Punjab
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Sialkot
+    enabled: true
+    province: Punjab
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Quetta
+    enabled: true
+    province: Balochistan
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Bahawalpur
+    enabled: true
+    province: Punjab
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Sargodha
+    enabled: true
+    province: Punjab
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Abbottabad
+    enabled: true
+    province: Khyber Pakhtunkhwa
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Hyderabad
+    enabled: true
+    province: Sindh
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null
+
+  - name: Chakwal
+    enabled: true
+    province: Punjab
+    olx_location_id: null
+    zameen_slug: null
+    pakwheels_slug: null

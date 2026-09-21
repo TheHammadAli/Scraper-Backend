@@ -1,0 +1,176 @@
+# ---------------------------------------------------------------------------
+# Collector settings. Cities live in cities.yml; everything else lives here.
+# ---------------------------------------------------------------------------
+
+storage:
+  database: data/listings.db
+  export_dir: exports
+  cache_dir: .cache
+
+http:
+  # Identify the crawler honestly. Put a real contact in here before running at
+  # any volume, so site operators can reach you instead of just blocking you.
+  user_agent: "FazlListingResearchBot/1.0 (+https://example.com/bot; contact: ops@example.com)"
+  contact_email: "ops@example.com"
+
+  timeout_seconds: 30
+  max_retries: 3
+  backoff_base_seconds: 2.0
+
+  # Politeness. delay_seconds is the MINIMUM gap between two requests to the
+  # same host; the actual gap adds random jitter on top, so the real spacing
+  # here is 1.5-2.5s - a normal crawl rate, roughly twice as fast as the 3-5s
+  # this started at.
+  #
+  # Going much below this is where trouble starts: the sites rate-limit, then
+  # block the IP, and a run that dies halfway is slower than one that waits.
+  # If a run still feels slow, raise the limit per category rather than
+  # dropping these - OLX needs only one request per ~25 ads, while PakWheels
+  # and Zameen need one per ad for the description.
+  delay_seconds: 1.5
+  jitter_seconds: 1.0
+
+  # If robots.txt disallows a path, skip it.
+  respect_robots: true
+
+  # Cache fetched pages so re-parsing doesn't mean re-fetching.
+  cache_responses: true
+  cache_ttl_hours: 24
+
+collection:
+  # Hard ceilings so an unattended run cannot spiral.
+  max_pages_per_city_category: 5
+  max_listings_per_city_category: 200
+  max_listings_per_run: 5000
+
+  # Skip re-fetching a detail page seen within this window. The listing's
+  # last_seen_at is still refreshed from the index page.
+  refetch_detail_after_hours: 168
+
+  # Capture a phone number only where the site publishes it in the page's own
+  # public payload, or where the seller typed it into the ad text. The gated
+  # "show phone number" flow behind a login is NOT automated by this project.
+  # Set to false to drop phone capture entirely.
+  collect_phone: true
+
+sources:
+  olx:
+    enabled: true
+    base_url: "https://www.olx.com.pk"
+    # Note: OLX's robots.txt disallows /api/, so its JSON search endpoint is
+    # not used. The collector reads the window.state blob embedded in the HTML
+    # category pages instead - one request returns ~25 complete ads.
+    # Every slug below was taken from OLX's own categories sitemap
+    # (/sitemap/searches/categories.xml) and then confirmed live against
+    # Lahore - each one returns listings. Do not hand-write a slug here:
+    # a wrong category id returns an empty page rather than an error, so it
+    # fails silently. Pull it from the sitemap and test it first.
+    categories:
+      # --- Vehicles ---
+      - key: cars
+        label: Cars
+        path: "cars_c84"
+        category_id: "84"
+      - key: bikes
+        label: Motorcycles
+        path: "motorcycles_c81"
+        category_id: "81"
+      - key: car-parts
+        label: Car Parts & Accessories
+        path: "car-parts-spare-parts_c82"
+        category_id: "82"
+
+      # --- Mobiles & computing ---
+      - key: mobiles
+        label: Mobile Phones
+        path: "mobile-phones_c1453"
+        category_id: "1453"
+      - key: tablets
+        label: Tablets
+        path: "tablets_c1455"
+        category_id: "1455"
+      - key: mobile-accessories
+        label: Mobile Accessories
+        path: "mobile-accessories_c1457"
+        category_id: "1457"
+      - key: computers
+        label: Computers & Accessories
+        path: "computers-accessories_c443"
+        category_id: "443"
+
+      # --- Electronics ---
+      - key: electronics
+        label: Electronics & Home Appliances
+        path: "electronics-home-appliances_c99"
+        category_id: "99"
+      - key: tv-audio
+        label: TV, Video & Audio
+        path: "tv-video-audio_c729"
+        category_id: "729"
+      - key: cameras
+        label: Cameras & Accessories
+        path: "cameras-accessories_c727"
+        category_id: "727"
+
+      # --- General marketplace ---
+      - key: furniture
+        label: Furniture & Home Decor
+        path: "furniture-home-decor_c628"
+        category_id: "628"
+      - key: fashion
+        label: Fashion & Beauty
+        path: "fashion-beauty_c87"
+        category_id: "87"
+      - key: watches
+        label: Watches
+        path: "watches_c1970"
+        category_id: "1970"
+      - key: games
+        label: Games & Entertainment
+        path: "games-entertainment_c93"
+        category_id: "93"
+
+  pakwheels:
+    enabled: true
+    base_url: "https://www.pakwheels.com"
+    # `group` is the section heading the picker shows these under.
+    categories:
+      - key: used-cars
+        label: Used Cars
+        path: "used-cars/search/-"
+        group: Cars
+        priority: 100
+      - key: bikes
+        label: Used Bikes
+        path: "used-bikes/search/-"
+        group: Bikes
+        priority: 100
+
+  zameen:
+    enabled: true
+    base_url: "https://www.zameen.com"
+    categories:
+      - key: homes-for-sale
+        label: Homes
+        path: "Homes"
+        group: For Sale
+        priority: 100
+      - key: plots-for-sale
+        label: Plots
+        path: "Plots"
+        group: For Sale
+        priority: 200
+      - key: commercial-for-sale
+        label: Commercial
+        path: "Commercial"
+        group: For Sale
+        priority: 300
+      - key: homes-for-rent
+        label: Homes
+        path: "Rentals_Homes"
+        group: For Rent
+        priority: 100
+
+logging:
+  level: INFO
+  file: logs/collector.log

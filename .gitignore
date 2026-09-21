@@ -1,0 +1,16 @@
+# Collected data and artifacts - never commit these
+data/
+exports/
+logs/
+.cache/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Secrets
+.env
+.env.*
