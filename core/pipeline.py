@@ -38,6 +38,9 @@ class RunStats:
     undated: int = 0       # no ad_date, so the date filter could not judge it
     cancelled: bool = False
     per_city: dict[str, int] = field(default_factory=dict)
+    # Units where paging hit its budget with a date filter active, so the
+    # result is a sample of the matching ads rather than all of them.
+    incomplete: list[str] = field(default_factory=list)
 
     def as_dict(self) -> dict[str, int]:
         return {
@@ -232,7 +235,12 @@ class Pipeline:
         start, end, keep_undated = date_window
         filtered_before = stats.filtered
 
-        for listing in collector.collect(city, category, limit=limit):
+        # The window goes down to the collector too, not just used for filtering
+        # here: these sites rank category pages by relevance rather than date,
+        # so the collector has to read further in and stop on its own terms.
+        for listing in collector.collect(
+            city, category, limit=limit, date_window=(start, end)
+        ):
             if stop_event is not None and stop_event.is_set():
                 log.info("cancel requested - stopping mid-category, keeping %s so far",
                          len(batch))
@@ -259,6 +267,32 @@ class Pipeline:
 
         dropped = stats.filtered - filtered_before
         outside = f", {dropped} outside the date range" if dropped else ""
+
+        # Say how much of the category was actually read. Without this a small
+        # result reads as "only 3 ads match", when it often means "3 of the
+        # pages we had budget for match".
+        coverage = getattr(collector, "last_coverage", None)
+        if coverage is not None:
+            # Out-of-window ads are dropped inside the collector now (so it
+            # does not spend detail fetches or its listing budget on them), so
+            # take that count from there rather than from the loop above.
+            stats.filtered += coverage.out_of_window
+            dropped += coverage.out_of_window
+            outside = f", {dropped} outside the date range" if dropped else ""
+
+            log.info("[%s] %s / %s coverage: %s",
+                     collector.source_name, city.name, category.key, coverage.describe())
+            if coverage.exhausted and (start or end):
+                reason = (
+                    "listing budget" if coverage.listing_budget_spent
+                    else f"{coverage.page_budget}-page budget"
+                )
+                stats.incomplete.append(
+                    f"{city.name}/{collector.source_name}/{category.key}: "
+                    f"stopped at the {reason} after {coverage.pages_read} page(s)"
+                    + (f" of {coverage.pages_available} available"
+                       if coverage.pages_available else "")
+                )
 
         if not batch:
             log.info("no listings kept for %s / %s / %s%s",

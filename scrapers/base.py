@@ -15,6 +15,8 @@ from __future__ import annotations
 import json
 import logging
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+from datetime import date
 from pathlib import Path
 from typing import Any, Iterator
 from urllib.parse import urljoin
@@ -29,6 +31,49 @@ from core.models import Listing
 from core.normalize import clean_text, extract_phone
 
 log = logging.getLogger(__name__)
+
+
+@dataclass
+class PageCoverage:
+    """How much of a category the collector actually looked at.
+
+    Worth reporting because a small result count has two very different
+    causes - "only three ads match" and "only three of the ads we looked at
+    match, and we looked at 5 pages out of 818".
+    """
+
+    pages_read: int
+    page_budget: int
+    pages_available: int | None = None
+    dated: bool = False
+    out_of_window: int = 0
+    listing_budget_spent: bool = False
+
+    @property
+    def exhausted(self) -> bool:
+        """True when paging stopped at a ceiling rather than at the last page."""
+        return self.pages_read >= self.page_budget or self.listing_budget_spent
+
+    def describe(self) -> str:
+        total = self.pages_available
+        of_total = f" of {total} the site reports" if total else ""
+        note = ""
+        if self.listing_budget_spent:
+            note = "  <- listing budget reached"
+        elif self.pages_read >= self.page_budget and (total is None or total > self.pages_read):
+            note = "  <- page budget reached, more ads exist beyond this point"
+        return f"read {self.pages_read} page(s){of_total}{note}"
+
+
+def _within(value: date | None, start: date | None, end: date | None) -> bool:
+    """Is this ad date inside the requested window? Undated counts as inside."""
+    if value is None:
+        return True
+    if start and value < start:
+        return False
+    if end and value > end:
+        return False
+    return True
 
 
 # --------------------------------------------------------------- parse helpers
@@ -145,6 +190,9 @@ class BaseCollector(ABC):
         self.base_url = source.base_url
         self._location_cache_path: Path = config.cache_dir / "locations.json"
         self._location_cache: dict[str, str] = self._load_location_cache()
+        # Set at the end of each collect() so the pipeline can report how much
+        # of the category was actually read.
+        self.last_coverage: PageCoverage | None = None
 
     # --------------------------------------------------------- location cache
 
@@ -244,10 +292,29 @@ class BaseCollector(ABC):
                 break
         return listing
 
-    def collect(self, city: City, category: Category, limit: int | None = None) -> Iterator[Listing]:
-        """Run the full pipeline for one city + category."""
+    def collect(
+        self,
+        city: City,
+        category: Category,
+        limit: int | None = None,
+        date_window: tuple = (None, None),
+    ) -> Iterator[Listing]:
+        """Run the full pipeline for one city + category.
+
+        `date_window` is the (start, end) the caller will filter on. It is
+        passed down rather than applied here because these sites do not order
+        a category page by date - see `CollectionSettings.max_pages_when_dated`
+        - so the only way to honour a date window is to read further into the
+        result set and stop once it has clearly been left behind.
+        """
         limits = self.config.collection
         limit = limit or limits.max_listings_per_city_category
+        start, end = date_window
+        dated = bool(start or end)
+
+        max_pages = (
+            limits.max_pages_when_dated if dated else limits.max_pages_per_city_category
+        )
 
         identifier = self.resolve_city(city)
         if not identifier:
@@ -255,11 +322,15 @@ class BaseCollector(ABC):
 
         produced = 0
         seen_urls: set[str] = set()
+        barren_pages = 0          # consecutive pages with nothing in the window
+        out_of_window = 0         # dropped here, so the pipeline can still count them
+        self.last_coverage = None  # set below so the pipeline can report it
 
+        pages_read = 0
         for page_number, index_url in enumerate(
             self.index_urls(city, identifier, category), start=1
         ):
-            if page_number > limits.max_pages_per_city_category or produced >= limit:
+            if page_number > max_pages or produced >= limit:
                 break
 
             try:
@@ -282,8 +353,11 @@ class BaseCollector(ABC):
                          self.source_name, index_url)
                 break
 
-            log.info("[%s] %s / %s page %s: %s listings",
-                     self.source_name, city.name, category.key, page_number, len(stubs))
+            pages_read = page_number
+            in_window = sum(1 for s in stubs if _within(s.ad_date, start, end))
+            log.info("[%s] %s / %s page %s: %s listings, %s in date window",
+                     self.source_name, city.name, category.key,
+                     page_number, len(stubs), in_window if dated else "n/a")
 
             for stub in stubs:
                 if produced >= limit:
@@ -292,12 +366,57 @@ class BaseCollector(ABC):
                     continue
                 seen_urls.add(stub.url_canonical)
 
+                # Drop out-of-window ads here rather than in the pipeline.
+                # Doing it after _complete() would spend a detail fetch on an
+                # ad about to be discarded, and - because `limit` counts what
+                # this loop produces - would let a date-filtered run burn its
+                # whole listing budget on ads it never keeps, ending pagination
+                # long before the page budget was spent. An undated stub is
+                # kept: the pipeline's keep_undated decides those.
+                if dated and not _within(stub.ad_date, start, end):
+                    out_of_window += 1
+                    continue
+
                 listing = self._complete(stub)
                 if listing is None:
                     continue
 
                 produced += 1
                 yield listing
+
+            # Optional early stop for a dated run, off by default. Ranking is
+            # by relevance, not date, so in-window ads come in clusters with
+            # long barren stretches between them - stopping on a run of empty
+            # pages drops every cluster that lay beyond the gap. See
+            # CollectionSettings.stop_after_barren_pages for the measurements.
+            if dated and limits.stop_after_barren_pages > 0:
+                barren_pages = 0 if in_window else barren_pages + 1
+                if barren_pages >= limits.stop_after_barren_pages:
+                    log.warning(
+                        "[%s] %s / %s: stopping at page %s after %s barren pages. "
+                        "Ordering is by relevance, so in-window ads may exist "
+                        "further in - set stop_after_barren_pages: 0 to read the "
+                        "full page budget.",
+                        self.source_name, city.name, category.key,
+                        page_number, barren_pages,
+                    )
+                    break
+
+        self.last_coverage = PageCoverage(
+            pages_read=pages_read,
+            page_budget=max_pages,
+            pages_available=self.total_pages(),
+            dated=dated,
+            out_of_window=out_of_window,
+            listing_budget_spent=produced >= limit,
+        )
+
+    def total_pages(self) -> int | None:
+        """How many index pages the site says exist, if it says so at all.
+
+        Used only to report coverage honestly. None means unknown.
+        """
+        return None
 
     def _complete(self, listing: Listing) -> Listing | None:
         """Fetch and parse the detail page when the stub is not good enough."""

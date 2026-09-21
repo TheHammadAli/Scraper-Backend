@@ -89,7 +89,10 @@ class ZameenCollector(BaseCollector):
     # ---------------------------------------------------------------- indexing
 
     def index_urls(self, city: City, identifier: str, category: Category) -> Iterator[str]:
-        pages = self.config.collection.max_pages_per_city_category
+        # Yield up to the larger of the two budgets; collect() applies whichever
+        # one actually governs this run.
+        limits = self.config.collection
+        pages = max(limits.max_pages_per_city_category, limits.max_pages_when_dated)
         for page in range(1, pages + 1):
             yield f"{self.base_url}/{category.path}/{identifier}-{page}.html"
 

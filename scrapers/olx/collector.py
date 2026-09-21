@@ -46,6 +46,10 @@ LOCATIONS_SITEMAP = "/sitemap/searches/locations.xml"
 class OlxCollector(BaseCollector):
     source_name = "olx"
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._nb_pages: int | None = None
+
     # ------------------------------------------------------------- city lookup
 
     def lookup_city(self, city: City) -> str | None:
@@ -69,14 +73,42 @@ class OlxCollector(BaseCollector):
     # ---------------------------------------------------------------- indexing
 
     def index_urls(self, city: City, identifier: str, category: Category) -> Iterator[str]:
-        pages = self.config.collection.max_pages_per_city_category
+        """Yield category pages, newest-capable ordering not being available.
+
+        OLX ranks a category page by `productScore desc` and only then by
+        timestamp, so these pages are NOT in date order. `?sorting=desc-creation`
+        is accepted by the page and does change
+        `state.algolia.settings.sort.key`, but the server-rendered `hits` come
+        back in an identical order - the chosen sort is applied in the browser
+        against a search endpoint whose path robots.txt disallows. Measured on
+        Lahore/mobile-phones: page 1's freshest ad was 91 minutes old while
+        page 10 held one 55 minutes old.
+
+        So the parameter is deliberately not sent (it would only fragment
+        OLX's CDN cache for no gain) and date coverage comes from reading more
+        pages instead - see CollectionSettings.max_pages_when_dated.
+        """
+        limits = self.config.collection
+        pages = max(limits.max_pages_per_city_category, limits.max_pages_when_dated)
         slug = f"{city_slug(city.name)}_g{identifier}"
         for page in range(1, pages + 1):
             suffix = f"?page={page}" if page > 1 else ""
             yield f"{self.base_url}/{slug}/{category.path}/{suffix}"
 
+    def total_pages(self) -> int | None:
+        return self._nb_pages
+
     def parse_index(self, response: Response, city: City, category: Category) -> list[Listing]:
         state = extract_window_json(response.text, "state")
+
+        # nbPages is what OLX says the full result set runs to. Keep it so the
+        # run can report "read 5 of 818 pages" instead of implying it saw
+        # everything. (nbHits is per-slot and much smaller - not the total.)
+        content = ((state or {}).get("algolia") or {}).get("content") or {}
+        nb_pages = content.get("nbPages")
+        if isinstance(nb_pages, int) and nb_pages > 0:
+            self._nb_pages = nb_pages
+
         hits = self._search_hits(state)
 
         if hits:

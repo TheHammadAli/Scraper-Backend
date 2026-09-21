@@ -446,8 +446,12 @@ class TestDateFilter(unittest.TestCase):
         """Run _collect_one against a stub collector yielding these ad dates."""
         class StubCollector:
             source_name = "olx"
+            last_coverage = None
 
-            def collect(self, city, category, limit=None):
+            def collect(self, city, category, limit=None, date_window=(None, None)):
+                # date_window is accepted because a real collector uses it to
+                # decide how deep to page; this stub yields a fixed set, so the
+                # pipeline's own filtering is what is under test here.
                 for index, ad_date in enumerate(dates):
                     yield make_listing(
                         source_listing_id=str(1000 + index),

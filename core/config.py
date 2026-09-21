@@ -78,6 +78,43 @@ class CollectionSettings:
     refetch_detail_after_hours: int = 168
     collect_phone: bool = True
 
+    # Page budget for a run that carries a date filter.
+    #
+    # None of these sites order a category page by date. OLX ranks by
+    # `productScore desc` ("Most relevant") and only then by timestamp, so
+    # today's ads are scattered through the whole result set rather than
+    # sitting on page 1 - a measured example: page 1's freshest ad was 91
+    # minutes old while page 10 held one 55 minutes old. Reading the default
+    # 5 pages therefore returns whichever few of today's ads happened to rank
+    # high, not the ads posted today.
+    #
+    # There is no URL parameter that fixes this. `?sorting=desc-creation` is
+    # accepted and does flip `state.algolia.settings.sort.key`, but the
+    # server-rendered hits come back in exactly the same order - OLX applies
+    # the chosen sort in the browser, against an endpoint this project does
+    # not call. So the only lever is reading more pages.
+    max_pages_when_dated: int = 40
+
+    # Stop a dated run after this many consecutive pages with nothing in the
+    # window. 0 disables it, which is the default, because on OLX it is not
+    # safe: today's ads arrive in clusters separated by long barren stretches
+    # rather than tailing off. Measured on Lahore/mobile-phones, pages 1-40:
+    #
+    #     page  1: 5 ads from today
+    #     pages 2-9: none
+    #     page 10: 16 ads from today
+    #     pages 11-39: none
+    #     page 40: 8 ads from today
+    #
+    # Gaps of 8 and 29 barren pages between live clusters - and page 40, the
+    # last one sampled, was still producing. Any threshold below ~30 would
+    # stop inside a gap and silently drop the clusters past it, which is the
+    # exact failure this setting looks like it prevents.
+    #
+    # An exhausted category is already handled: a page that parses to zero
+    # listings ends pagination on its own.
+    stop_after_barren_pages: int = 0
+
 
 @dataclass
 class Config:
@@ -252,6 +289,8 @@ def load_config(root: Path | str | None = None) -> Config:
                 collection_raw.get("refetch_detail_after_hours", 168)
             ),
             collect_phone=bool(collection_raw.get("collect_phone", True)),
+            max_pages_when_dated=int(collection_raw.get("max_pages_when_dated", 40)),
+            stop_after_barren_pages=int(collection_raw.get("stop_after_barren_pages", 5)),
         ),
         database_path=_resolve(storage.get("database"), "data/listings.db", "DATABASE_PATH"),
         export_dir=_resolve(storage.get("export_dir"), "exports", "EXPORT_DIR"),

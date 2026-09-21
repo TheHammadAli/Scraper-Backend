@@ -43,6 +43,33 @@ collection:
   max_listings_per_city_category: 200
   max_listings_per_run: 5000
 
+  # Page budget when the run carries a date filter ("today's ads only").
+  #
+  # None of these sites sort a category page by date. OLX ranks by
+  # productScore ("Most relevant") and only then by timestamp, so today's ads
+  # are spread through the whole result set instead of sitting on page 1 -
+  # measured on Lahore/mobile-phones, page 1's freshest ad was 91 minutes old
+  # while page 10 held one 55 minutes old. Reading only 5 pages therefore
+  # returns a handful of today's ads, not today's ads.
+  #
+  # 40 pages is roughly 1,300 ads per city+category and about two minutes at
+  # the delay above. Raise it for better coverage of a busy category and
+  # accept the extra time; there is no cheap trick that replaces it.
+  #
+  # Note this is a SAMPLE, not a sweep: OLX reported 2,308 pages for
+  # Lahore/mobile-phones, so 40 pages is under 2% of the category. The run
+  # summary says how many pages it read out of how many exist - read it
+  # before treating a count as a total.
+  max_pages_when_dated: 40
+
+  # Stop a dated run early after this many consecutive pages with nothing in
+  # the window. 0 disables it (the default) because it is not safe here:
+  # today's ads come in clusters with long barren gaps, not a clean tail-off.
+  # Measured on Lahore/mobile-phones - page 1 had 5 of today's ads, pages 2-9
+  # none, page 10 had 16, pages 11-39 none, page 40 had 8. A threshold of 5
+  # would stop on page 6 and miss the 24 ads on pages 10 and 40.
+  stop_after_barren_pages: 0
+
   # Skip re-fetching a detail page seen within this window. The listing's
   # last_seen_at is still refreshed from the index page.
   refetch_detail_after_hours: 168
