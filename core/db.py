@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS listings (
     source_listing_id  TEXT,
     fingerprint        TEXT    NOT NULL,
     city               TEXT    NOT NULL,
+    area               TEXT,
     category           TEXT,
     title              TEXT    NOT NULL,
     description        TEXT,
@@ -82,7 +83,7 @@ CREATE TABLE IF NOT EXISTS rejected_listings (
 """
 
 UPDATABLE_COLUMNS = (
-    "city", "category", "title", "description", "price", "price_currency",
+    "city", "area", "category", "title", "description", "price", "price_currency",
     "price_raw", "phone", "seller_name", "ad_date", "url", "source_listing_id",
     "fingerprint",
 )
@@ -91,6 +92,7 @@ UPDATABLE_COLUMNS = (
 # already there, so each is applied only when missing.
 MIGRATIONS = {
     "seller_name": "ALTER TABLE listings ADD COLUMN seller_name TEXT",
+    "area": "ALTER TABLE listings ADD COLUMN area TEXT",
 }
 
 
@@ -165,11 +167,11 @@ class Database:
             self.conn.execute(
                 """
                 INSERT INTO listings (
-                    source, source_listing_id, fingerprint, city, category, title,
+                    source, source_listing_id, fingerprint, city, area, category, title,
                     description, price, price_currency, price_raw, phone, seller_name,
                     ad_date, url, url_canonical, first_seen_at, last_seen_at, scraped_at
                 ) VALUES (
-                    :source, :source_listing_id, :fingerprint, :city, :category, :title,
+                    :source, :source_listing_id, :fingerprint, :city, :area, :category, :title,
                     :description, :price, :price_currency, :price_raw, :phone, :seller_name,
                     :ad_date, :url, :url_canonical, :first_seen_at, :last_seen_at, :scraped_at
                 )
@@ -182,7 +184,7 @@ class Database:
         merged = dict(row_data)
         if len(merged.get("description") or "") < len(existing["description"] or ""):
             merged["description"] = existing["description"]
-        for column in ("price", "phone", "seller_name", "ad_date", "source_listing_id"):
+        for column in ("price", "phone", "seller_name", "ad_date", "source_listing_id", "area"):
             if merged.get(column) in (None, "") and existing[column] is not None:
                 merged[column] = existing[column]
 

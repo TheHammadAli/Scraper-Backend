@@ -72,47 +72,72 @@ class HttpSettings:
 
 @dataclass(frozen=True)
 class CollectionSettings:
-    max_pages_per_city_category: int = 5
-    max_listings_per_city_category: int = 200
-    max_listings_per_run: int = 5000
+    """Page and listing budgets.
+
+    Every budget below follows one rule: 0 means no cap - keep paging until
+    the site itself says the category is exhausted (an index page parses to
+    zero listings). That is what "collect everything" actually requires:
+    none of these three sites order a category page in a way a fixed sample
+    can be trusted against, so ANY positive cap is a sample, not a total,
+    even outside a date filter. See scrapers/base.py's collect() and the OLX
+    collector's index_urls() for the measurements this is based on.
+
+    The cost of leaving a budget at 0 is time, not correctness: sweeping an
+    entire busy category can take well over an hour (OLX reported 2,308
+    pages for one city's mobile-phones category alone, at roughly 2s/page).
+    Set an explicit positive number on any of these, or pass a `limit` to a
+    run, to trade completeness for a faster, bounded run.
+    """
+
+    max_pages_per_city_category: int = 0
+    max_listings_per_city_category: int = 0
+
+    # Global safety net across an ENTIRE run (every city x source x category
+    # combined) - not a per-category budget. Kept separate and non-zero by
+    # default because it guards against a genuinely unattended run spiralling
+    # across many cities and categories at once, which the per-category
+    # budgets above do not protect against on their own now that they default
+    # to unlimited. 0 disables this too, for anyone who deliberately wants no
+    # ceiling at all.
+    max_listings_per_run: int = 200_000
+
     refetch_detail_after_hours: int = 168
     collect_phone: bool = True
 
-    # Page budget for a run that carries a date filter.
+    # Page and listing budgets specifically for the date-filtered path, kept
+    # separate from the two above so a dated run can be tuned independently.
+    # Same 0-means-unlimited convention.
     #
     # None of these sites order a category page by date. OLX ranks by
     # `productScore desc` ("Most relevant") and only then by timestamp, so
     # today's ads are scattered through the whole result set rather than
     # sitting on page 1 - a measured example: page 1's freshest ad was 91
-    # minutes old while page 10 held one 55 minutes old. Reading the default
-    # 5 pages therefore returns whichever few of today's ads happened to rank
-    # high, not the ads posted today.
+    # minutes old while page 10 held one 55 minutes old, and a separate run
+    # found clusters of today's ads on page 1, page 10 AND page 40 with nothing
+    # in between - ordering reshuffles between requests, so there is no page
+    # count that is safe to stop at early.
     #
     # There is no URL parameter that fixes this. `?sorting=desc-creation` is
     # accepted and does flip `state.algolia.settings.sort.key`, but the
     # server-rendered hits come back in exactly the same order - OLX applies
     # the chosen sort in the browser, against an endpoint this project does
-    # not call. So the only lever is reading more pages.
-    max_pages_when_dated: int = 40
+    # not call. So the only way to honestly satisfy "give me all of today's
+    # ads" is to read until the category is exhausted.
+    max_pages_when_dated: int = 0
+    max_listings_when_dated: int = 0
 
-    # Stop a dated run after this many consecutive pages with nothing in the
-    # window. 0 disables it, which is the default, because on OLX it is not
-    # safe: today's ads arrive in clusters separated by long barren stretches
-    # rather than tailing off. Measured on Lahore/mobile-phones, pages 1-40:
+    # Stop a dated run early after this many consecutive pages with nothing in
+    # the window. 0 disables it, which is the default, because on OLX it is
+    # not safe: today's ads arrive in clusters separated by long barren
+    # stretches rather than tailing off. Measured on Lahore/mobile-phones
+    # across 40 pages: page 1 had 5 ads from today, pages 2-9 none, page 10
+    # had 16, pages 11-39 none, page 40 had 8 - gaps of 8 and 29 barren pages
+    # between live clusters, with the last page sampled still producing. Any
+    # threshold here would stop inside a gap and silently drop the clusters
+    # past it, which is the exact failure this setting looks like it prevents.
     #
-    #     page  1: 5 ads from today
-    #     pages 2-9: none
-    #     page 10: 16 ads from today
-    #     pages 11-39: none
-    #     page 40: 8 ads from today
-    #
-    # Gaps of 8 and 29 barren pages between live clusters - and page 40, the
-    # last one sampled, was still producing. Any threshold below ~30 would
-    # stop inside a gap and silently drop the clusters past it, which is the
-    # exact failure this setting looks like it prevents.
-    #
-    # An exhausted category is already handled: a page that parses to zero
-    # listings ends pagination on its own.
+    # An exhausted category is already handled without this: a page that
+    # parses to zero listings ends pagination on its own regardless.
     stop_after_barren_pages: int = 0
 
 
@@ -279,18 +304,19 @@ def load_config(root: Path | str | None = None) -> Config:
         ),
         collection=CollectionSettings(
             max_pages_per_city_category=int(
-                collection_raw.get("max_pages_per_city_category", 5)
+                collection_raw.get("max_pages_per_city_category", 0)
             ),
             max_listings_per_city_category=int(
-                collection_raw.get("max_listings_per_city_category", 200)
+                collection_raw.get("max_listings_per_city_category", 0)
             ),
-            max_listings_per_run=int(collection_raw.get("max_listings_per_run", 5000)),
+            max_listings_per_run=int(collection_raw.get("max_listings_per_run", 200_000)),
             refetch_detail_after_hours=int(
                 collection_raw.get("refetch_detail_after_hours", 168)
             ),
             collect_phone=bool(collection_raw.get("collect_phone", True)),
-            max_pages_when_dated=int(collection_raw.get("max_pages_when_dated", 40)),
-            stop_after_barren_pages=int(collection_raw.get("stop_after_barren_pages", 5)),
+            max_pages_when_dated=int(collection_raw.get("max_pages_when_dated", 0)),
+            max_listings_when_dated=int(collection_raw.get("max_listings_when_dated", 0)),
+            stop_after_barren_pages=int(collection_raw.get("stop_after_barren_pages", 0)),
         ),
         database_path=_resolve(storage.get("database"), "data/listings.db", "DATABASE_PATH"),
         export_dir=_resolve(storage.get("export_dir"), "exports", "EXPORT_DIR"),

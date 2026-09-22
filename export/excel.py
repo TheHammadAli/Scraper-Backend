@@ -23,6 +23,7 @@ COLUMNS = [
     ("source", "Source", 12),
     ("source_listing_id", "Listing ID", 16),
     ("city", "City", 14),
+    ("area", "Area", 22),
     ("category", "Category", 22),
     ("title", "Title", 45),
     ("description_preview", "Description", 55),

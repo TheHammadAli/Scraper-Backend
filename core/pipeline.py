@@ -194,7 +194,7 @@ class Pipeline:
                     cancelled = True
                     break
 
-                if stats.total >= run_cap:
+                if run_cap and stats.total >= run_cap:
                     log.warning("run cap of %s listings reached - stopping", run_cap)
                     break
 
@@ -282,7 +282,10 @@ class Pipeline:
 
             log.info("[%s] %s / %s coverage: %s",
                      collector.source_name, city.name, category.key, coverage.describe())
-            if coverage.exhausted and (start or end):
+            # Worth flagging whenever a positive cap was hit, not only on a
+            # dated run - the default is unlimited, so this only fires when a
+            # cap was explicitly configured (or passed as `limit`).
+            if coverage.exhausted:
                 reason = (
                     "listing budget" if coverage.listing_budget_spent
                     else f"{coverage.page_budget}-page budget"

@@ -38,29 +38,44 @@ http:
   cache_ttl_hours: 24
 
 collection:
-  # Hard ceilings so an unattended run cannot spiral.
-  max_pages_per_city_category: 5
-  max_listings_per_city_category: 200
-  max_listings_per_run: 5000
+  # Page and listing budgets. 0 means NO CAP: keep paging a category until the
+  # site itself says it is exhausted (an index page returns zero listings).
+  # That is what "collect everything" requires - none of these three sites
+  # order a category page in a way a fixed sample can be trusted against, so
+  # any positive number here trades completeness for speed. The default is 0
+  # on every budget below for exactly that reason: nothing is silently
+  # truncated unless you explicitly ask for it.
+  #
+  # The cost is time, not correctness. A single busy category can run for
+  # over an hour on its own - OLX reported 2,308 pages for one city's
+  # mobile-phones category alone, at roughly 2 seconds per page. The run
+  # summary reports how many pages it actually read out of how many the site
+  # says exist, so you can see the real coverage rather than guessing.
+  max_pages_per_city_category: 0
+  max_listings_per_city_category: 0
 
-  # Page budget when the run carries a date filter ("today's ads only").
+  # Global safety net across an ENTIRE run (every selected city x source x
+  # category combined) - not a per-category budget, and kept non-zero by
+  # default. This is what stops an unattended multi-city run from spiralling
+  # now that the per-category budgets above are unlimited by default. 0
+  # disables this too, for a deliberately uncapped run.
+  max_listings_per_run: 200000
+
+  # Page and listing budgets specifically for a run that carries a date filter
+  # ("today's ads only"), kept separate so a dated run can be tuned on its
+  # own. Same 0 = no cap convention as above.
   #
   # None of these sites sort a category page by date. OLX ranks by
   # productScore ("Most relevant") and only then by timestamp, so today's ads
   # are spread through the whole result set instead of sitting on page 1 -
   # measured on Lahore/mobile-phones, page 1's freshest ad was 91 minutes old
-  # while page 10 held one 55 minutes old. Reading only 5 pages therefore
-  # returns a handful of today's ads, not today's ads.
-  #
-  # 40 pages is roughly 1,300 ads per city+category and about two minutes at
-  # the delay above. Raise it for better coverage of a busy category and
-  # accept the extra time; there is no cheap trick that replaces it.
-  #
-  # Note this is a SAMPLE, not a sweep: OLX reported 2,308 pages for
-  # Lahore/mobile-phones, so 40 pages is under 2% of the category. The run
-  # summary says how many pages it read out of how many exist - read it
-  # before treating a count as a total.
-  max_pages_when_dated: 40
+  # while page 10 held one 55 minutes old, and a separate run found clusters
+  # of today's ads on page 1, page 10 AND page 40 with nothing in between -
+  # ordering reshuffles between requests, so no fixed page count is safe.
+  # Reading until the category is exhausted is the only way "today's ads"
+  # actually means all of them.
+  max_pages_when_dated: 0
+  max_listings_when_dated: 0
 
   # Stop a dated run early after this many consecutive pages with nothing in
   # the window. 0 disables it (the default) because it is not safe here:

@@ -11,6 +11,7 @@ already public and is read as-is. Nothing gated is unmasked.
 
 from __future__ import annotations
 
+import itertools
 import logging
 import re
 from typing import Iterator
@@ -22,6 +23,7 @@ from core.normalize import clean_text, normalize_phone, parse_ad_date, parse_pri
 
 from scrapers.base import (
     BaseCollector,
+    area_from_location_hierarchy,
     extract_jsonld,
     extract_window_json,
     find_first_key,
@@ -89,11 +91,9 @@ class ZameenCollector(BaseCollector):
     # ---------------------------------------------------------------- indexing
 
     def index_urls(self, city: City, identifier: str, category: Category) -> Iterator[str]:
-        # Yield up to the larger of the two budgets; collect() applies whichever
-        # one actually governs this run.
-        limits = self.config.collection
-        pages = max(limits.max_pages_per_city_category, limits.max_pages_when_dated)
-        for page in range(1, pages + 1):
+        # Unbounded - collect() in base.py enforces the actual page budget
+        # (or, by default, reads until a page comes back empty).
+        for page in itertools.count(1):
             yield f"{self.base_url}/{category.path}/{identifier}-{page}.html"
 
     def parse_index(self, response: Response, city: City, category: Category) -> list[Listing]:
@@ -239,6 +239,13 @@ class ZameenCollector(BaseCollector):
             name = data.get("contactName") or find_first_key(state, "contactName")
             if name:
                 listing.seller_name = clean_text(str(name)) or None
+
+        if not listing.area:
+            # The society/area Zameen shows under the listing title to every
+            # visitor - see area_from_location_hierarchy() for what this is
+            # and is not.
+            data = (state.get("property") or {}).get("data") or state
+            listing.area = area_from_location_hierarchy(data.get("location"))
 
         if not listing.source_listing_id:
             found = find_first_key(state, "externalID", "id", "listingId")

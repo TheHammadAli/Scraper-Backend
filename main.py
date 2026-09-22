@@ -54,6 +54,7 @@ def row_to_listing(row) -> dict:
         "source": row["source"],
         "source_listing_id": row["source_listing_id"],
         "city": row["city"],
+        "area": row["area"],
         "category": row["category"],
         "title": row["title"],
         "description": row["description"],

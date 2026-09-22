@@ -727,7 +727,8 @@ class TestExcelExport(unittest.TestCase):
 
         path = export_to_excel(self.db, self.tmp / "out_run", seen_since=run_start)
         sheet = load_workbook(path)["All Listings"]
-        titles = {row[5] for row in sheet.iter_rows(min_row=2, values_only=True)}
+        title_at = [c.value for c in sheet[1]].index("Title")
+        titles = {row[title_at] for row in sheet.iter_rows(min_row=2, values_only=True)}
 
         self.assertIn("Found in this run", titles)
         self.assertIn("Seen again in this run", titles)
@@ -796,10 +797,12 @@ class TestExcelExport(unittest.TestCase):
         self.db.conn.commit()
 
         path = export_to_excel(self.db, self.tmp / "out2")
-        workbook = load_workbook(path)
+        sheet = load_workbook(path)["All Listings"]
+        headers = [c.value for c in sheet[1]]
+        preview_at = headers.index("Description")
         values = [
-            row[6]
-            for row in workbook["All Listings"].iter_rows(min_row=2, values_only=True)
+            row[preview_at]
+            for row in sheet.iter_rows(min_row=2, values_only=True)
         ]
         injected = [v for v in values if v and "cmd" in str(v)]
         self.assertTrue(injected)

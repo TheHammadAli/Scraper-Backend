@@ -400,8 +400,24 @@ Two things follow from `respect_robots: true`:
   description, so they are meaningfully slower. Budget roughly 4-5 seconds
   per listing.
 
-`collection.max_pages_per_city_category`, `max_listings_per_city_category` and
-`max_listings_per_run` are hard ceilings so an unattended run cannot spiral.
+`collection.max_pages_per_city_category` and `max_listings_per_city_category`
+default to `0`, meaning **no cap**: a run reads a category until the site
+itself returns an empty page, because none of these three sites order a
+category page in a way a fixed sample can be trusted against - see the
+comments on `CollectionSettings` in `core/config.py` for the measurements
+behind that. The cost is time, not correctness: a single busy category can
+run for over an hour on its own. Set either to a positive number (or pass
+`--limit`) to trade completeness for a faster, bounded run.
+
+`max_pages_when_dated` and `max_listings_when_dated` are the same convention
+for a run with a date filter (`--today`, `--date-from`/`--date-to`) - kept
+separate so a dated run can be tuned independently of a plain one.
+
+`max_listings_per_run` is different: a global safety net across an *entire*
+run (every city × source × category combined), defaulting to `200000` rather
+than `0`. It exists to stop a genuinely unattended multi-city run from
+spiralling now that the per-category budgets above are unlimited by default;
+set it to `0` too if you deliberately want no ceiling at all.
 
 ---
 

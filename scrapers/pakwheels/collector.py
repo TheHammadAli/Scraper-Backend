@@ -7,6 +7,7 @@ straight into the URL (`ct_lahore`), so no location lookup is needed.
 
 from __future__ import annotations
 
+import itertools
 import logging
 import re
 from typing import Iterator
@@ -79,13 +80,12 @@ class PakWheelsCollector(BaseCollector):
     # ---------------------------------------------------------------- indexing
 
     def index_urls(self, city: City, identifier: str, category: Category) -> Iterator[str]:
-        # Yield up to the larger of the two budgets; collect() applies whichever
-        # one actually governs this run. robots.txt disallows `?sortby=`, so
-        # these pages come back in PakWheels' own default order - a dated run
-        # has to read further in rather than sort.
-        limits = self.config.collection
-        pages = max(limits.max_pages_per_city_category, limits.max_pages_when_dated)
-        for page in range(1, pages + 1):
+        # robots.txt disallows `?sortby=`, so these pages come back in
+        # PakWheels' own default order - a dated run has to read further in
+        # rather than sort. Unbounded here - collect() in base.py enforces the
+        # actual page budget (or, by default, reads until a page comes back
+        # empty).
+        for page in itertools.count(1):
             yield f"{self.base_url}/{category.path}/ct_{identifier}/?page={page}"
 
     def parse_index(self, response: Response, city: City, category: Category) -> list[Listing]:

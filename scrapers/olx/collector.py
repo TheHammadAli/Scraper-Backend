@@ -17,6 +17,7 @@ sanctioned way to discover location URLs.
 
 from __future__ import annotations
 
+import itertools
 import logging
 import re
 from typing import Any, Iterator
@@ -28,6 +29,7 @@ from core.normalize import city_slug, clean_text, parse_ad_date, parse_price
 
 from scrapers.base import (
     BaseCollector,
+    area_from_location_hierarchy,
     extract_jsonld,
     extract_window_json,
     find_first_key,
@@ -85,13 +87,13 @@ class OlxCollector(BaseCollector):
         page 10 held one 55 minutes old.
 
         So the parameter is deliberately not sent (it would only fragment
-        OLX's CDN cache for no gain) and date coverage comes from reading more
-        pages instead - see CollectionSettings.max_pages_when_dated.
+        OLX's CDN cache for no gain). The sequence here is unbounded -
+        `collect()` in base.py is what actually enforces the page budget (or,
+        by default, reads until a page comes back empty) - see
+        CollectionSettings for that convention.
         """
-        limits = self.config.collection
-        pages = max(limits.max_pages_per_city_category, limits.max_pages_when_dated)
         slug = f"{city_slug(city.name)}_g{identifier}"
-        for page in range(1, pages + 1):
+        for page in itertools.count(1):
             suffix = f"?page={page}" if page > 1 else ""
             yield f"{self.base_url}/{slug}/{category.path}/{suffix}"
 
@@ -188,6 +190,9 @@ class OlxCollector(BaseCollector):
             price_currency=currency,
             price_raw=price_raw,
             seller_name=self._seller_of(ad),
+            # The public neighbourhood/area OLX shows under the ad title -
+            # see area_from_location_hierarchy() for what this is and is not.
+            area=area_from_location_hierarchy(ad.get("location")),
             ad_date=parse_ad_date(ad.get("createdAt") or ad.get("updatedAt")),
             url=url,
         )
@@ -271,6 +276,8 @@ class OlxCollector(BaseCollector):
             if not listing.source_listing_id and ad.get("externalID"):
                 listing.source_listing_id = str(ad["externalID"])
             listing.seller_name = listing.seller_name or self._seller_of(ad)
+            if not listing.area:
+                listing.area = area_from_location_hierarchy(ad.get("location"))
         else:
             # Last resort: the ad page's schema.org markup.
             product = jsonld_of_type(extract_jsonld(response.text), "Product", "Car", "WebPage")

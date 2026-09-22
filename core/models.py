@@ -51,6 +51,15 @@ class Listing:
     # The seller's display name as the site shows it publicly - a person's
     # first name on OLX/PakWheels, an agency name on Zameen.
     seller_name: str | None = None
+    # The publicly displayed neighbourhood/society/area within the city, e.g.
+    # "DHA Phase 5" or "Gulshan-e-Iqbal" - a category the seller picked from
+    # the site's own location picker, shown to every visitor under the ad
+    # title. This is NOT a street/house address and never comes from a gated
+    # source: OLX and Zameen both expose it as the deepest entry in the ad's
+    # public location hierarchy (Country > Province > City > Area). PakWheels
+    # does not surface anything finer than city on a listing, so this stays
+    # empty there.
+    area: str = ""
     ad_date: date | None = None
     scraped_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
 
@@ -112,6 +121,7 @@ class Listing:
             "source_listing_id": self.source_listing_id,
             "fingerprint": self.fingerprint,
             "city": self.city.strip(),
+            "area": (self.area or "").strip(),
             "category": self.category,
             "title": self.title.strip(),
             "description": (self.description or "").strip(),

@@ -32,6 +32,12 @@ from core.normalize import clean_text, extract_phone
 
 log = logging.getLogger(__name__)
 
+# A backstop against a genuine runaway loop (a site bug, or one of ours, that
+# keeps returning a non-empty page forever) when a budget is left at its
+# unlimited (0) default. No real category should ever get near this - it
+# exists purely so an infinite loop fails loudly instead of running forever.
+_HARD_PAGE_SAFETY_CAP = 20_000
+
 
 @dataclass
 class PageCoverage:
@@ -43,7 +49,7 @@ class PageCoverage:
     """
 
     pages_read: int
-    page_budget: int
+    page_budget: int  # 0 means no cap was configured for this run
     pages_available: int | None = None
     dated: bool = False
     out_of_window: int = 0
@@ -51,8 +57,10 @@ class PageCoverage:
 
     @property
     def exhausted(self) -> bool:
-        """True when paging stopped at a ceiling rather than at the last page."""
-        return self.pages_read >= self.page_budget or self.listing_budget_spent
+        """True when paging stopped at a configured ceiling rather than
+        because the site itself ran out of results."""
+        page_cap_hit = self.page_budget > 0 and self.pages_read >= self.page_budget
+        return page_cap_hit or self.listing_budget_spent
 
     def describe(self) -> str:
         total = self.pages_available
@@ -60,8 +68,12 @@ class PageCoverage:
         note = ""
         if self.listing_budget_spent:
             note = "  <- listing budget reached"
-        elif self.pages_read >= self.page_budget and (total is None or total > self.pages_read):
+        elif self.page_budget > 0 and self.pages_read >= self.page_budget and (
+            total is None or total > self.pages_read
+        ):
             note = "  <- page budget reached, more ads exist beyond this point"
+        elif self.page_budget == 0:
+            note = "  <- no cap set, read until the category was exhausted"
         return f"read {self.pages_read} page(s){of_total}{note}"
 
 
@@ -155,6 +167,32 @@ def find_first_key(obj: Any, *keys: str, max_depth: int = 12) -> Any:
             if found is not None:
                 return found
     return None
+
+
+def area_from_location_hierarchy(location: object, city_level: int = 2) -> str:
+    """The publicly displayed area/neighbourhood from a levelled location list.
+
+    OLX and Zameen both publish an ad's location the same way: a list of
+    {"level": N, "name": ...} entries running Country(0) -> Province(1) ->
+    City(2) -> Area(3), rendered under every ad's title to every visitor -
+    this is the field a seller picks from the site's own location dropdown,
+    not a street address.
+
+    Returns the deepest entry's name only when it sits below `city_level` -
+    i.e. it is a genuine area distinct from the city already stored
+    separately in `Listing.city` - and "" when the hierarchy has nothing more
+    specific than the city itself.
+    """
+    if not isinstance(location, list):
+        return ""
+    deepest = max(
+        (entry for entry in location if isinstance(entry, dict) and entry.get("name")),
+        key=lambda entry: entry.get("level", -1),
+        default=None,
+    )
+    if deepest and deepest.get("level", -1) > city_level:
+        return clean_text(str(deepest["name"]))
+    return ""
 
 
 def text_of(node) -> str:
@@ -301,17 +339,34 @@ class BaseCollector(ABC):
     ) -> Iterator[Listing]:
         """Run the full pipeline for one city + category.
 
+        `limit` and the page budget both follow the project-wide convention
+        of "0 or None means unlimited": by default this reads pages until the
+        site itself says the category is exhausted (an index page returns no
+        listings), because a fixed sample cannot be trusted to contain
+        everything - see `CollectionSettings` for the measurements behind
+        that. Pass an explicit positive `limit`, or set a positive budget in
+        config, to trade completeness for a faster, bounded run.
+
         `date_window` is the (start, end) the caller will filter on. It is
         passed down rather than applied here because these sites do not order
         a category page by date - see `CollectionSettings.max_pages_when_dated`
         - so the only way to honour a date window is to read further into the
-        result set and stop once it has clearly been left behind.
+        result set and stop once the category is exhausted.
         """
         limits = self.config.collection
-        limit = limit or limits.max_listings_per_city_category
         start, end = date_window
         dated = bool(start or end)
 
+        if limit is None:
+            limit = (
+                limits.max_listings_when_dated if dated
+                else limits.max_listings_per_city_category
+            )
+        limit = limit or None  # 0 -> None (unlimited)
+
+        # 0 means unlimited; checked explicitly in the loop below rather than
+        # folded into `limit` since it governs a different guard (pages, not
+        # listings produced).
         max_pages = (
             limits.max_pages_when_dated if dated else limits.max_pages_per_city_category
         )
@@ -330,7 +385,19 @@ class BaseCollector(ABC):
         for page_number, index_url in enumerate(
             self.index_urls(city, identifier, category), start=1
         ):
-            if page_number > max_pages or produced >= limit:
+            page_cap_reached = max_pages > 0 and page_number > max_pages
+            listing_cap_reached = limit is not None and produced >= limit
+            if page_cap_reached or listing_cap_reached:
+                break
+
+            if page_number > _HARD_PAGE_SAFETY_CAP:
+                log.error(
+                    "[%s] %s / %s: hit the runaway safety cap of %s pages - "
+                    "stopping. No real category should reach this; treat it as "
+                    "a bug (a page kept returning listings without ever going "
+                    "empty).",
+                    self.source_name, city.name, category.key, _HARD_PAGE_SAFETY_CAP,
+                )
                 break
 
             try:
@@ -360,7 +427,7 @@ class BaseCollector(ABC):
                      page_number, len(stubs), in_window if dated else "n/a")
 
             for stub in stubs:
-                if produced >= limit:
+                if limit is not None and produced >= limit:
                     break
                 if stub.url_canonical in seen_urls:
                     continue
@@ -408,7 +475,7 @@ class BaseCollector(ABC):
             pages_available=self.total_pages(),
             dated=dated,
             out_of_window=out_of_window,
-            listing_budget_spent=produced >= limit,
+            listing_budget_spent=limit is not None and produced >= limit,
         )
 
     def total_pages(self) -> int | None:

@@ -88,12 +88,12 @@ def cmd_run(args, config: Config) -> int:
         print("=" * 56)
 
         if stats.incomplete:
-            print("\n  NOTE: these ran out of page budget before exhausting the")
-            print("  date window, so the counts above are a sample, not a total:")
+            print("\n  NOTE: these hit a configured page/listing cap before the")
+            print("  category was exhausted, so the counts above are a sample:")
             for line in stats.incomplete:
                 print(f"    - {line}")
-            print("  Raise collection.max_pages_when_dated in config/settings.yml")
-            print("  to widen the search.")
+            print("  Set the relevant cap to 0 in config/settings.yml (the")
+            print("  default) to read every listing instead.")
 
         if not args.no_export:
             path = export_to_excel(db, config.export_dir)
