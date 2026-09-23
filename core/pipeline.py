@@ -220,6 +220,16 @@ class Pipeline:
                         on_progress(index, total, label)
                     except Exception:
                         log.debug("progress callback failed", exc_info=True)
+
+                # Catches a cancel that landed while the unit just above was
+                # collecting - without this, cancelling during the last unit
+                # never gets noticed (there is no next loop iteration to
+                # check cancelled_now() at the top) and the job reports
+                # "completed" instead of "cancelled".
+                if cancelled_now():
+                    log.warning("cancelled - stopping after %s of %s units", index, total)
+                    cancelled = True
+                    break
         finally:
             self.db.conn.commit()
             self.http.skip_cache = previous_skip
@@ -239,7 +249,7 @@ class Pipeline:
         # here: these sites rank category pages by relevance rather than date,
         # so the collector has to read further in and stop on its own terms.
         for listing in collector.collect(
-            city, category, limit=limit, date_window=(start, end)
+            city, category, limit=limit, date_window=(start, end), stop_event=stop_event
         ):
             if stop_event is not None and stop_event.is_set():
                 log.info("cancel requested - stopping mid-category, keeping %s so far",

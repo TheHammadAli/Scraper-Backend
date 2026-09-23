@@ -336,6 +336,7 @@ class BaseCollector(ABC):
         category: Category,
         limit: int | None = None,
         date_window: tuple = (None, None),
+        stop_event=None,
     ) -> Iterator[Listing]:
         """Run the full pipeline for one city + category.
 
@@ -352,6 +353,12 @@ class BaseCollector(ABC):
         a category page by date - see `CollectionSettings.max_pages_when_dated`
         - so the only way to honour a date window is to read further into the
         result set and stop once the category is exhausted.
+
+        `stop_event` is checked before each page fetch and before each detail
+        fetch, not just between yielded listings - a dated run can spend many
+        pages with nothing in the window, so waiting for a yield to notice a
+        cancellation would leave it unresponsive for as long as that page run
+        lasts.
         """
         limits = self.config.collection
         start, end = date_window
@@ -388,6 +395,11 @@ class BaseCollector(ABC):
             page_cap_reached = max_pages > 0 and page_number > max_pages
             listing_cap_reached = limit is not None and produced >= limit
             if page_cap_reached or listing_cap_reached:
+                break
+
+            if stop_event is not None and stop_event.is_set():
+                log.info("[%s] %s / %s: cancel requested - stopping pagination",
+                          self.source_name, city.name, category.key)
                 break
 
             if page_number > _HARD_PAGE_SAFETY_CAP:
@@ -428,6 +440,8 @@ class BaseCollector(ABC):
 
             for stub in stubs:
                 if limit is not None and produced >= limit:
+                    break
+                if stop_event is not None and stop_event.is_set():
                     break
                 if stub.url_canonical in seen_urls:
                     continue
