@@ -1,7 +1,7 @@
 """Zameen.com collector.
 
-Zameen URLs carry a `<City>-<id>` slug, resolved live off the homepage's own
-city links. Detail pages expose both JSON-LD and an inline `window.state`
+Zameen URLs carry a `<City>-<id>` slug, read from the city list Zameen embeds in
+its own pages (see core/locations.py). Detail pages expose both JSON-LD and an inline `window.state`
 payload; JSON-LD is tried first, then the state blob, then CSS selectors.
 
 Unlike OLX and PakWheels, Zameen agency listings often publish the contact
@@ -18,6 +18,7 @@ from typing import Iterator
 
 from core.config import Category, City
 from core.http import FetchError, Response
+from core.locations import LocationResult, SiteLocation, parse_zameen_cities, pick_location
 from core.models import Listing
 from core.normalize import clean_text, normalize_phone, parse_ad_date, parse_price
 
@@ -29,6 +30,7 @@ from scrapers.base import (
     find_first_key,
     first_text,
     jsonld_of_type,
+    places_from_location_hierarchy,
     soup_of,
 )
 
@@ -66,27 +68,39 @@ class ZameenCollector(BaseCollector):
 
     # ------------------------------------------------------------- city lookup
 
-    def lookup_city(self, city: City) -> str | None:
-        """Find Zameen's '<City>-<id>' slug from its own city links.
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._cities: list[SiteLocation] | None = None
 
-        Returns None rather than guessing an id - a wrong id would silently
-        collect a different city's listings.
+    def _city_index(self) -> list[SiteLocation]:
+        """Zameen's full city list, read once per collector.
+
+        Every Zameen page carries it in `window.state.cities`. The homepage's
+        visible links only cover a dozen cities, and a slug like
+        `Faisalabad_Jaranwala-1363` cannot be built from a name - so this is
+        the only dependable source.
         """
-        pattern = re.compile(
-            rf"/(?:Homes|Plots|Commercial|Rentals_Homes)/({re.escape(city.name)}-\d+)-\d+\.html",
-            re.I,
-        )
+        if self._cities is None:
+            with self.http.cached_lookup():
+                html = self.http.get(self.base_url).text
+            found = parse_zameen_cities(html)
+            if not found:
+                raise FetchError(
+                    "Zameen's page no longer carries its city list - its format may have changed"
+                )
+            self._cities = found
+        return self._cities
 
-        for url in (self.base_url, f"{self.base_url}/Homes/"):
-            try:
-                html = self.http.get(url).text
-            except FetchError as exc:
-                log.debug("[zameen] lookup via %s failed: %s", url, exc)
-                continue
-            match = pattern.search(html)
-            if match:
-                return match.group(1)
-        return None
+    def lookup_city(self, city: City) -> LocationResult:
+        """Zameen's '<City>-<id>' slug for the city.
+
+        Reported unsupported, not guessed, when Zameen has no such city - a
+        wrong id would silently collect a different city's listings.
+        """
+        hit = pick_location(self._city_index(), city.keys, city.province)
+        if hit is None:
+            return LocationResult.unsupported(f"Zameen has no city page for {city.name}")
+        return LocationResult.resolved(hit.identifier, matched=hit.name)
 
     # ---------------------------------------------------------------- indexing
 
@@ -100,6 +114,15 @@ class ZameenCollector(BaseCollector):
         page = soup_of(response.text)
         listings: list[Listing] = []
         seen: set[str] = set()
+
+        # Where each ad says it is, from the same state blob, keyed by ad id.
+        state = extract_window_json(response.text, "state") or {}
+        hits = ((state.get("algolia") or {}).get("content") or {}).get("hits") or []
+        places_by_id = {
+            str(hit.get("externalID")): places_from_location_hierarchy(hit.get("location"))
+            for hit in hits
+            if isinstance(hit, dict)
+        }
 
         for anchor in page.select("a[href*='/Property/']"):
             href = anchor.get("href") or ""
@@ -131,6 +154,7 @@ class ZameenCollector(BaseCollector):
                     category=category.label,
                     title=title or f"Zameen listing {property_id}",
                     url=self.absolute(href),
+                    located_in=places_by_id.get(property_id, ()),
                 )
             )
 

@@ -24,6 +24,7 @@ from typing import Any, Iterator
 
 from core.config import Category, City
 from core.http import FetchError, Response
+from core.locations import LocationResult, SiteLocation, parse_olx_locations, pick_location, url_slug
 from core.models import Listing
 from core.normalize import city_slug, clean_text, parse_ad_date, parse_price
 
@@ -34,6 +35,7 @@ from scrapers.base import (
     extract_window_json,
     find_first_key,
     jsonld_of_type,
+    places_from_location_hierarchy,
     soup_of,
 )
 
@@ -51,26 +53,37 @@ class OlxCollector(BaseCollector):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._nb_pages: int | None = None
+        self._locations: list[SiteLocation] | None = None
 
     # ------------------------------------------------------------- city lookup
 
-    def lookup_city(self, city: City) -> str | None:
-        """Resolve a city name to OLX's numeric location id.
+    def _location_index(self) -> list[SiteLocation]:
+        """OLX's locations, read once per collector."""
+        if self._locations is None:
+            with self.http.cached_lookup():
+                xml = self.http.get(f"{self.base_url}{LOCATIONS_SITEMAP}").text
+            found = parse_olx_locations(xml)
+            if not found:
+                raise FetchError("OLX's locations sitemap held no locations - its format may have changed")
+            self._locations = found
+        return self._locations
 
-        Reads OLX's published locations sitemap and matches `<slug>_g<id>`.
-        Returns None rather than guessing - a wrong id would quietly collect a
-        different city's ads.
+    def pinned_identifier(self, city: City, value: str) -> str:
+        # cities.yml pins the bare numeric id; the URL needs OLX's `<slug>_g<id>`.
+        return f"{url_slug(city.name)}_g{value}" if value.isdigit() else value
+
+    def lookup_city(self, city: City) -> LocationResult:
+        """OLX's own `<slug>_g<id>` for the city, from its locations sitemap.
+
+        Matched by name and alias (OLX spells Mingora `mingaora`) and by province
+        where the name repeats (two `kotli`s). A city OLX has no page for is
+        reported unsupported - never guessed, since a wrong id would quietly
+        collect another city's ads.
         """
-        slug = city_slug(city.name)
-
-        try:
-            xml = self.http.get(f"{self.base_url}{LOCATIONS_SITEMAP}").text
-        except FetchError as exc:
-            log.warning("[olx] could not read locations sitemap: %s", exc)
-            return None
-
-        match = re.search(rf"/{re.escape(slug)}_g(\d+)", xml, re.I)
-        return match.group(1) if match else None
+        hit = pick_location(self._location_index(), city.keys, city.province)
+        if hit is None:
+            return LocationResult.unsupported(f"OLX has no location page for {city.name}")
+        return LocationResult.resolved(hit.identifier, matched=hit.identifier.rsplit("_g", 1)[0])
 
     # ---------------------------------------------------------------- indexing
 
@@ -92,10 +105,9 @@ class OlxCollector(BaseCollector):
         by default, reads until a page comes back empty) - see
         CollectionSettings for that convention.
         """
-        slug = f"{city_slug(city.name)}_g{identifier}"
         for page in itertools.count(1):
             suffix = f"?page={page}" if page > 1 else ""
-            yield f"{self.base_url}/{slug}/{category.path}/{suffix}"
+            yield f"{self.base_url}/{identifier}/{category.path}/{suffix}"
 
     def total_pages(self) -> int | None:
         return self._nb_pages
@@ -195,6 +207,7 @@ class OlxCollector(BaseCollector):
             area=area_from_location_hierarchy(ad.get("location")),
             ad_date=parse_ad_date(ad.get("createdAt") or ad.get("updatedAt")),
             url=url,
+            located_in=places_from_location_hierarchy(ad.get("location")),
         )
 
         # OLX's payload carries only contactInfo.roles ("show_phone_number")

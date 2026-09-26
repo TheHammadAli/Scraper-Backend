@@ -17,6 +17,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from core.db import Database  # noqa: E402
+from core.locations import CityOutcome  # noqa: E402
 from core.models import Listing, canonical_url  # noqa: E402
 from core.normalize import (  # noqa: E402
     extract_phone,
@@ -447,11 +448,14 @@ class TestDateFilter(unittest.TestCase):
         class StubCollector:
             source_name = "olx"
             last_coverage = None
+            last_outcome = None
 
-            def collect(self, city, category, limit=None, date_window=(None, None)):
+            def collect(self, city, category, limit=None, date_window=(None, None),
+                        stop_event=None):
                 # date_window is accepted because a real collector uses it to
                 # decide how deep to page; this stub yields a fixed set, so the
                 # pipeline's own filtering is what is under test here.
+                self.last_outcome = CityOutcome("Lahore", "olx", "Cars", status="completed")
                 for index, ad_date in enumerate(dates):
                     yield make_listing(
                         source_listing_id=str(1000 + index),

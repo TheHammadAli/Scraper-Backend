@@ -42,6 +42,10 @@ class Job:
     total: int = 0
     label: str = "starting..."
     stats: dict[str, int] = field(default_factory=dict)
+    # One entry per city/source/category unit as it finishes - see
+    # core.locations.CityOutcome. Lets the UI show which cities worked, which
+    # the site does not have, and which failed, instead of one merged total.
+    city_results: list[dict] = field(default_factory=list)
     error: str | None = None
     logs: deque = field(default_factory=lambda: deque(maxlen=settings.JOB_LOG_LIMIT))
     stop_event: threading.Event = field(default_factory=threading.Event)
@@ -61,6 +65,7 @@ class Job:
                 "percent": round(100 * self.done / self.total) if self.total else 0,
             },
             "stats": self.stats,
+            "city_results": list(self.city_results),
             "error": self.error,
             "logs": lines[log_offset:] if include_logs else [],
             "log_count": len(lines),
@@ -176,6 +181,7 @@ class JobManager:
                     limit=job.params.get("limit"),
                     stop_event=job.stop_event,
                     on_progress=on_progress,
+                    on_city_result=job.city_results.append,
                 )
 
                 job.stats = stats.as_dict()

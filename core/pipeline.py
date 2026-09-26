@@ -9,6 +9,7 @@ from datetime import date, datetime
 from core.config import Config
 from core.db import Database
 from core.http import HttpClient
+from core.locations import CityOutcome
 from core.models import Listing
 
 log = logging.getLogger(__name__)
@@ -36,8 +37,11 @@ class RunStats:
     errors: int = 0
     filtered: int = 0      # outside the requested date range
     undated: int = 0       # no ad_date, so the date filter could not judge it
+    unsupported: int = 0   # city/category units the site has no page for (not errors)
     cancelled: bool = False
     per_city: dict[str, int] = field(default_factory=dict)
+    # One entry per city + source + category unit, whatever happened to it.
+    city_results: list[dict] = field(default_factory=list)
     # Units where paging hit its budget with a date filter active, so the
     # result is a sample of the matching ads rather than all of them.
     incomplete: list[str] = field(default_factory=list)
@@ -50,6 +54,7 @@ class RunStats:
             "errors": self.errors,
             "filtered": self.filtered,
             "undated": self.undated,
+            "unsupported": self.unsupported,
         }
 
     @property
@@ -125,6 +130,7 @@ class Pipeline:
         keep_undated: bool = True,
         stop_event=None,
         on_progress=None,
+        on_city_result=None,
     ) -> RunStats:
         """Collect listings.
 
@@ -146,6 +152,10 @@ class Pipeline:
         work already committed.
 
         `on_progress(done, total, label)` is called as each unit completes.
+
+        `on_city_result(dict)` is called with each unit's outcome (completed,
+        unsupported, failed or cancelled) - see core.locations.CityOutcome.
+        Every selected city gets one, so none can be skipped without a trace.
         """
         from scrapers import build_collector  # imported here to avoid a cycle
 
@@ -210,10 +220,19 @@ class Pipeline:
                     self._collect_one(
                         collectors[source.name], city, category, stats, limit, stop_event,
                         date_window=(start, end, keep_undated),
+                        on_city_result=on_city_result,
                     )
-                except Exception:
+                except Exception as exc:
                     stats.errors += 1
                     log.exception("unhandled error on %s", label)
+                    outcome = CityOutcome(
+                        city=city.name, source=source.name, category=category.label,
+                        status="failed", reason=f"unexpected error: {type(exc).__name__}: {exc}",
+                    )
+                    log.info("[City] %s (%s / %s)", city.name, source.name, category.label)
+                    log.info("[Status] Failed")
+                    log.info("[Reason] %s", outcome.reason)
+                    self._record(outcome, stats, on_city_result)
 
                 if on_progress is not None:
                     try:
@@ -237,9 +256,19 @@ class Pipeline:
         stats.cancelled = cancelled
         return self._finish(run_id, stats)
 
+    def _record(self, outcome: CityOutcome, stats: RunStats, on_city_result=None) -> None:
+        if outcome.status == "unsupported":
+            stats.unsupported += 1
+        stats.city_results.append(outcome.as_dict())
+        if on_city_result is not None:
+            try:
+                on_city_result(outcome.as_dict())
+            except Exception:
+                log.debug("city result callback failed", exc_info=True)
+
     def _collect_one(
         self, collector, city, category, stats: RunStats, limit, stop_event=None,
-        date_window: tuple = (None, None, True),
+        date_window: tuple = (None, None, True), on_city_result=None,
     ) -> None:
         batch: list[Listing] = []
         start, end, keep_undated = date_window
@@ -307,19 +336,52 @@ class Pipeline:
                        if coverage.pages_available else "")
                 )
 
+        outcome = collector.last_outcome
+
+        # The city could not be searched: nothing was collected, and the
+        # reason is already logged. `unsupported` is the site not having the
+        # city; `failed` is something going wrong - only that counts as an error.
+        if outcome.status in ("unsupported", "failed"):
+            if outcome.status == "failed":
+                stats.errors += 1
+            self._record(outcome, stats, on_city_result)
+            return
+
+        cancelled = outcome.status == "pending" or (
+            stop_event is not None and stop_event.is_set()
+        )
+        outcome.status = "cancelled" if cancelled else "completed"
+        outcome.listings = len(batch)
+
+        notes = [outcome.reason] if outcome.reason else []
+        if outcome.foreign_ads:
+            places = ", ".join(outcome.foreign_places[:3])
+            notes.append(f"{outcome.foreign_ads} ad(s) from other places ({places}) were left out")
+        if not batch:
+            head = (
+                f"0 listings kept - {dropped} ad(s) fell outside the date range"
+                if dropped else f"no ads in {city.name} for this category"
+            )
+            if not outcome.reason:
+                notes.insert(0, head)
+        outcome.reason = "; ".join(notes)
+
         if not batch:
             log.info("no listings kept for %s / %s / %s%s",
                      city.name, collector.source_name, category.key, outside)
-            return
+        else:
+            counts = self.db.upsert_many(batch)
+            stats.inserted += counts["inserted"]
+            stats.updated += counts["updated"]
+            stats.per_city[city.name] = stats.per_city.get(city.name, 0) + len(batch)
 
-        counts = self.db.upsert_many(batch)
-        stats.inserted += counts["inserted"]
-        stats.updated += counts["updated"]
-        stats.per_city[city.name] = stats.per_city.get(city.name, 0) + len(batch)
+            log.info("%s / %s / %s -> %s new, %s refreshed%s",
+                     city.name, collector.source_name, category.key,
+                     counts["inserted"], counts["updated"], outside)
 
-        log.info("%s / %s / %s -> %s new, %s refreshed%s",
-                 city.name, collector.source_name, category.key,
-                 counts["inserted"], counts["updated"], outside)
+        log.info("[Results Found] %s", outcome.listings)
+        log.info("[Status] %s", "Cancelled" if cancelled else "Completed")
+        self._record(outcome, stats, on_city_result)
 
     def _finish(self, run_id: int, stats: RunStats) -> RunStats:
         self.db.finish_run(run_id, stats.as_dict())

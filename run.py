@@ -145,8 +145,10 @@ def cmd_verify(args, config: Config) -> int:
     from scrapers import build_collector
 
     source_names = csv_list(args.source) or list(config.sources)
-    city_name = args.city or config.enabled_cities()[0].name
-    city = next(c for c in config.cities if c.name.lower() == city_name.lower())
+    city = config.find_city(args.city or config.enabled_cities()[0].name)
+    if city is None:
+        print(f"unknown city {args.city!r} - see `python run.py check-cities`", file=sys.stderr)
+        return 2
 
     exit_code = 0
     with Database(config.database_path) as db, HttpClient(config.http, config.cache_dir) as http:
@@ -160,11 +162,12 @@ def cmd_verify(args, config: Config) -> int:
             print(f"\n--- {source_name} / {city.name} ---")
             collector = build_collector(source_name, config, http, db)
 
-            identifier = collector.resolve_city(city)
-            if not identifier:
-                print("  location   : NOT RESOLVED - set it in config/cities.yml")
+            location = collector.resolve_city(city)
+            if not location.ok:
+                print(f"  location   : {location.status.upper()} - {location.reason}")
                 exit_code = 1
                 continue
+            identifier = location.identifier
             print(f"  location   : {identifier}")
 
             category = source.categories[0]
@@ -197,6 +200,57 @@ def cmd_verify(args, config: Config) -> int:
             print(f"  validation : {'OK' if not problems else '; '.join(problems)}")
 
     return exit_code
+
+
+def cmd_check_cities(args, config: Config) -> int:
+    """Show how each city maps onto each site, and optionally prove it live.
+
+    For every city x source: the site's own identifier, the first search URL,
+    and - with --fetch - whether that page really returns ads for that city.
+    A city a site does not have is reported as such, distinct from a failure.
+    """
+    from scrapers import build_collector
+
+    names = csv_list(args.cities)
+    cities = config.enabled_cities(names) if names else config.enabled_cities()
+    sources = csv_list(args.sources) or list(config.sources)
+
+    problems = 0
+    with Database(config.database_path) as db, HttpClient(config.http, config.cache_dir) as http:
+        for source_name in sources:
+            source = config.sources.get(source_name)
+            if source is None:
+                print(f"[{source_name}] unknown source")
+                problems += 1
+                continue
+            collector = build_collector(source_name, config, http, db)
+            category = source.category(args.category) if args.category else source.categories[0]
+            if category is None:
+                print(f"[{source_name}] unknown category {args.category!r}")
+                problems += 1
+                continue
+
+            print(f"\n=== {source_name} ({category.label}) ===")
+            for city in cities:
+                location = collector.resolve_city(city)
+                if not location.ok:
+                    print(f"  {city.name:<22} {location.status.upper():<12} {location.reason}")
+                    problems += location.status == "error"
+                    continue
+
+                url = next(collector.index_urls(city, location.identifier, category))
+                line = f"  {city.name:<22} OK           {url}"
+                if args.fetch:
+                    try:
+                        response = http.get(url)
+                        issue = collector.validate_index(response, city, category)
+                        ads = 0 if issue else len(collector.parse_index(response, city, category))
+                        line += f"  -> {issue or f'{ads} ads on page 1'}"
+                    except Exception as exc:  # report, keep checking the rest
+                        line += f"  -> FAILED {type(exc).__name__}: {exc}"
+                        problems += 1
+                print(line)
+    return 1 if problems else 0
 
 
 def cmd_sync_categories(args, config: Config) -> int:
@@ -291,6 +345,16 @@ def build_parser() -> argparse.ArgumentParser:
     )
     run_cmd.add_argument("--no-export", action="store_true", help="skip the Excel export")
     run_cmd.set_defaults(func=cmd_run)
+
+    check_cmd = sub.add_parser(
+        "check-cities", help="show how cities map onto each site's location/search URLs"
+    )
+    check_cmd.add_argument("--cities", help="comma separated (default: every city)")
+    check_cmd.add_argument("--sources", help="comma separated (default: all)")
+    check_cmd.add_argument("--category", help="category key to build the URL for (default: first)")
+    check_cmd.add_argument("--fetch", action="store_true",
+                           help="also load page 1 and count ads (one request per city)")
+    check_cmd.set_defaults(func=cmd_check_cities)
 
     sync_cmd = sub.add_parser(
         "sync-categories", help="pull OLX's full category list from its sitemap"

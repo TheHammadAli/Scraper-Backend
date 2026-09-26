@@ -17,7 +17,6 @@ import logging
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import date
-from pathlib import Path
 from typing import Any, Iterator
 from urllib.parse import urljoin
 
@@ -27,6 +26,7 @@ from core.config import Category, City, Config, Source
 from core.db import Database
 from core.http import FetchError, HttpClient, RobotsDisallowed, Response
 from core.jsonblob import extract_window_json as _extract_window_json
+from core.locations import CityOutcome, LocationResult, match_key
 from core.models import Listing
 from core.normalize import clean_text, extract_phone
 
@@ -37,6 +37,14 @@ log = logging.getLogger(__name__)
 # unlimited (0) default. No real category should ever get near this - it
 # exists purely so an infinite loop fails loudly instead of running forever.
 _HARD_PAGE_SAFETY_CAP = 20_000
+
+# A small city runs out of ads long before a page does, and the sites fill the
+# rest two ways (both measured live): OLX pads with ads from nearby places
+# (Skardu's page 1 held 10 Skardu ads and 14 from Astore/Hunza, page 2 none of
+# its own), and PakWheels serves page 1 again as page 2. Either way a page
+# arrives with no ad for this city that has not been seen. Two in a row means
+# the city is exhausted - without this an uncapped run keeps paging.
+_STALE_PAGES_TO_STOP = 2
 
 
 @dataclass
@@ -195,6 +203,22 @@ def area_from_location_hierarchy(location: object, city_level: int = 2) -> str:
     return ""
 
 
+def places_from_location_hierarchy(location: object, city_level: int = 2) -> tuple[str, ...]:
+    """The place names at city level and below in an ad's location hierarchy.
+
+    The same Country(0) > Province(1) > City(2) > Area(3) list that
+    area_from_location_hierarchy() reads. Country and province are left out:
+    they are the same for every ad on the page and say nothing about the city.
+    """
+    if not isinstance(location, list):
+        return ()
+    return tuple(
+        clean_text(str(entry["name"]))
+        for entry in location
+        if isinstance(entry, dict) and entry.get("name") and entry.get("level", -1) >= city_level
+    )
+
+
 def text_of(node) -> str:
     return clean_text(node.get_text(" ", strip=True)) if node else ""
 
@@ -226,69 +250,49 @@ class BaseCollector(ABC):
         self.http = http
         self.db = db
         self.base_url = source.base_url
-        self._location_cache_path: Path = config.cache_dir / "locations.json"
-        self._location_cache: dict[str, str] = self._load_location_cache()
         # Set at the end of each collect() so the pipeline can report how much
         # of the category was actually read.
         self.last_coverage: PageCoverage | None = None
+        # What happened for the city being collected - see CityOutcome.
+        self.last_outcome: CityOutcome | None = None
 
-    # --------------------------------------------------------- location cache
+    # --------------------------------------------------------- city resolution
 
-    def _load_location_cache(self) -> dict[str, str]:
-        if self._location_cache_path.exists():
-            try:
-                return json.loads(self._location_cache_path.read_text(encoding="utf-8"))
-            except (json.JSONDecodeError, OSError):
-                log.warning("location cache unreadable; starting fresh")
-        return {}
+    def pinned_identifier(self, city: City, value: str) -> str:
+        """Turn an identifier pinned in cities.yml into what index_urls expects."""
+        return value
 
-    def _save_location_cache(self) -> None:
-        self._location_cache_path.parent.mkdir(parents=True, exist_ok=True)
-        try:
-            self._location_cache_path.write_text(
-                json.dumps(self._location_cache, indent=2, sort_keys=True), encoding="utf-8"
+    def resolve_city(self, city: City) -> LocationResult:
+        """A pin from cities.yml, else the site's own location list.
+
+        Never returns a guess: a city the site does not have comes back
+        `unsupported`, and a lookup that could not be completed comes back
+        `error` - the caller reports either one instead of searching anyway.
+        """
+        pinned = city.slug_for(self.source_name)
+        if pinned:
+            return LocationResult.resolved(
+                self.pinned_identifier(city, pinned), matched="pinned in cities.yml"
             )
-        except OSError as exc:
-            log.debug("could not persist location cache: %s", exc)
-
-    def cached_location(self, city: City) -> str | None:
-        return self._location_cache.get(f"{self.source_name}:{city.name.lower()}")
-
-    def cache_location(self, city: City, identifier: str) -> None:
-        self._location_cache[f"{self.source_name}:{city.name.lower()}"] = identifier
-        self._save_location_cache()
-
-    def resolve_city(self, city: City) -> str | None:
-        """Config override, then cache, then a live lookup. None means skip."""
-        configured = city.slug_for(self.source_name)
-        if configured:
-            return configured
-
-        cached = self.cached_location(city)
-        if cached:
-            return cached
 
         try:
-            resolved = self.lookup_city(city)
-        except (FetchError, RobotsDisallowed) as exc:
-            log.warning("[%s] could not look up %s: %s", self.source_name, city.name, exc)
-            return None
-
-        if resolved:
-            self.cache_location(city, resolved)
-            log.info("[%s] resolved %s -> %s", self.source_name, city.name, resolved)
-        else:
-            log.warning(
-                "[%s] no location id found for %s. Set it manually in config/cities.yml.",
-                self.source_name, city.name,
+            return self.lookup_city(city)
+        except RobotsDisallowed as exc:
+            return LocationResult.error(str(exc))
+        except FetchError as exc:
+            return LocationResult.error(
+                f"could not look up {city.name} on {self.source_name}: {exc}"
             )
-        return resolved
 
     # ------------------------------------------------------- subclass contract
 
     @abstractmethod
-    def lookup_city(self, city: City) -> str | None:
-        """Resolve a city name to this site's identifier via a live lookup."""
+    def lookup_city(self, city: City) -> LocationResult:
+        """Find this site's identifier for the city in the site's own data.
+
+        Raise FetchError if the lookup itself fails; return
+        `LocationResult.unsupported(...)` if the site simply does not have it.
+        """
 
     @abstractmethod
     def index_urls(self, city: City, identifier: str, category: Category) -> Iterator[str]:
@@ -297,6 +301,30 @@ class BaseCollector(ABC):
     @abstractmethod
     def parse_index(self, response: Response, city: City, category: Category) -> list[Listing]:
         """Parse an index page into partial listings (detail may be missing)."""
+
+    def in_city(self, stub: Listing, city: City) -> bool:
+        """Is this ad in `city`, going by where the ad itself says it is?
+
+        An ad that does not say (empty `located_in`) is kept - dropping on a
+        missing field would empty a city over a parser gap.
+        """
+        if not stub.located_in:
+            return True
+        return any(match_key(place) in city.keys for place in stub.located_in)
+
+    def split_by_city(self, stubs: list[Listing], city: City) -> tuple[list[Listing], list[Listing]]:
+        """(ads in the city, ads from other places)."""
+        own: list[Listing] = []
+        others: list[Listing] = []
+        for stub in stubs:
+            (own if self.in_city(stub, city) else others).append(stub)
+        return own, others
+
+    def validate_index(self, response: Response, city: City, category: Category) -> str | None:
+        """Sanity-check the first index page. Return a reason if it is not
+        actually scoped to `city` (so its ads would be filed under the wrong
+        city), or None if it is fine."""
+        return None
 
     def needs_detail(self, listing: Listing) -> bool:
         """Whether the detail page must be fetched to complete this listing."""
@@ -378,15 +406,27 @@ class BaseCollector(ABC):
             limits.max_pages_when_dated if dated else limits.max_pages_per_city_category
         )
 
-        identifier = self.resolve_city(city)
-        if not identifier:
+        outcome = CityOutcome(city=city.name, source=self.source_name, category=category.label)
+        self.last_outcome = outcome
+        self.last_coverage = None
+        log.info("[City] %s (%s / %s)", city.name, self.source_name, category.label)
+        log.info("[Status] Started")
+
+        location = self.resolve_city(city)
+        outcome.matched = location.matched
+        if not location.ok:
+            outcome.status = "unsupported" if location.status == "unsupported" else "failed"
+            outcome.reason = location.reason
+            log.info("[Status] %s", "Unsupported" if outcome.status == "unsupported" else "Failed")
+            log.info("[Reason] %s", location.reason)
             return
+        identifier = location.identifier
 
         produced = 0
         seen_urls: set[str] = set()
+        stale_pages = 0           # consecutive pages with no new ad for this city
         barren_pages = 0          # consecutive pages with nothing in the window
         out_of_window = 0         # dropped here, so the pipeline can still count them
-        self.last_coverage = None  # set below so the pipeline can report it
 
         pages_read = 0
         for page_number, index_url in enumerate(
@@ -412,31 +452,89 @@ class BaseCollector(ABC):
                 )
                 break
 
+            if page_number == 1:
+                outcome.search_url = index_url
+                log.info("[Search URL] %s", index_url)
+                log.info("[Status] Searching")
+
             try:
                 response = self.http.get(index_url)
             except RobotsDisallowed as exc:
                 log.warning("[%s] %s", self.source_name, exc)
+                self._fail(outcome, "failed", str(exc))
                 return
             except FetchError as exc:
                 log.warning("[%s] index page failed: %s", self.source_name, exc)
+                if page_number == 1:
+                    if exc.status == 404:
+                        # The city resolved, but the site has no such page for it.
+                        self._fail(
+                            outcome, "unsupported",
+                            f"{self.source_name} has no '{category.label}' page for "
+                            f"{city.name} (HTTP 404 on {index_url})",
+                        )
+                    else:
+                        self._fail(outcome, "failed", f"search request failed: {exc}")
+                    return
+                if exc.status == 404:
+                    # Zameen answers 404, not an empty page, past its last page.
+                    log.info("[%s] no page %s - that was the last one", self.source_name, page_number)
+                else:
+                    outcome.reason = f"stopped early at page {page_number}: {exc}"
                 break
+
+            if page_number == 1:
+                problem = self.validate_index(response, city, category)
+                if problem:
+                    self._fail(outcome, "unsupported", problem)
+                    return
 
             try:
                 stubs = self.parse_index(response, city, category)
-            except Exception:  # a parse failure on one page should not kill the run
+            except Exception as exc:  # a parse failure on one page should not kill the run
                 log.exception("[%s] could not parse index %s", self.source_name, index_url)
+                if page_number == 1:
+                    self._fail(outcome, "failed",
+                               f"could not read the results page ({type(exc).__name__}: {exc})")
+                    return
+                outcome.reason = f"stopped early at page {page_number}: could not parse the page"
                 break
 
             if not stubs:
                 log.info("[%s] no listings on %s - stopping pagination",
                          self.source_name, index_url)
+                if page_number == 1:
+                    outcome.reason = "the site returned no ads for this city and category"
                 break
+
+            # Keep only ads that say they are in this city. A small city's page
+            # is padded with ads from nearby places, which must not be filed
+            # under it.
+            stubs, others = self.split_by_city(stubs, city)
+            outcome.foreign_ads += len(others)
+            for stub in others:
+                place = stub.located_in[0] if stub.located_in else "?"   # the city, not its area
+                if place not in outcome.foreign_places and len(outcome.foreign_places) < 5:
+                    outcome.foreign_places.append(place)
+
+            if not any(s.url_canonical not in seen_urls for s in stubs):
+                stale_pages += 1
+                log.info("[%s] %s / %s page %s: no new ads for this city (%s from other places, %s repeated)",
+                         self.source_name, city.name, category.key, page_number,
+                         len(others), len(stubs))
+                if stale_pages >= _STALE_PAGES_TO_STOP:
+                    log.info("[%s] %s / %s: out of ads for this city - stopping pagination",
+                             self.source_name, city.name, category.key)
+                    break
+                continue
+            stale_pages = 0
 
             pages_read = page_number
             in_window = sum(1 for s in stubs if _within(s.ad_date, start, end))
-            log.info("[%s] %s / %s page %s: %s listings, %s in date window",
-                     self.source_name, city.name, category.key,
-                     page_number, len(stubs), in_window if dated else "n/a")
+            log.info("[%s] %s / %s page %s: %s listings%s, %s in date window",
+                     self.source_name, city.name, category.key, page_number, len(stubs),
+                     f" (+{len(others)} from other places left out)" if others else "",
+                     in_window if dated else "n/a")
 
             for stub in stubs:
                 if limit is not None and produced >= limit:
@@ -491,6 +589,16 @@ class BaseCollector(ABC):
             out_of_window=out_of_window,
             listing_budget_spent=limit is not None and produced >= limit,
         )
+        outcome.status = "completed"
+        outcome.pages_read = pages_read
+        outcome.listings = produced
+
+    @staticmethod
+    def _fail(outcome: CityOutcome, status: str, reason: str) -> None:
+        outcome.status = status
+        outcome.reason = reason
+        log.info("[Status] %s", "Unsupported" if status == "unsupported" else "Failed")
+        log.info("[Reason] %s", reason)
 
     def total_pages(self) -> int | None:
         """How many index pages the site says exist, if it says so at all.

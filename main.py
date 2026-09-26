@@ -112,8 +112,16 @@ def get_config() -> dict:
     """Cities, sources and categories for the run form."""
     config = load_config()
     return {
+        # The whole master list - the picker filters and searches client-side,
+        # so nothing here is paged or capped.
         "cities": [
-            {"name": c.name, "province": c.province, "enabled": c.enabled}
+            {
+                "name": c.name,
+                "province": c.province,
+                "enabled": c.enabled,
+                "aliases": list(c.aliases),
+                "coverage": c.coverage,
+            }
             for c in config.cities
         ],
         "sources": [

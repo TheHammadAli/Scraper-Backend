@@ -62,6 +62,12 @@ class Listing:
     area: str = ""
     ad_date: date | None = None
     scraped_at: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+    # Where the ad says it is - the place names below "Pakistan > province" in
+    # its own location, as read from the index page. Never stored: it exists so
+    # the collector can tell an ad from the city that was searched from one a
+    # site added because the city ran out of ads. Empty means the page did not
+    # say, and the ad is taken at face value.
+    located_in: tuple[str, ...] = field(default=(), repr=False, compare=False)
 
     # ---------------------------------------------------------------- identity
 

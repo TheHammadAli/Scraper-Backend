@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import os
 from dataclasses import dataclass, field, replace
 from pathlib import Path
@@ -10,7 +11,7 @@ from typing import Any
 import yaml
 
 from .categories import load_synced_categories
-from .normalize import city_slug
+from .locations import city_keys, match_key
 
 
 @dataclass(frozen=True)
@@ -18,19 +19,29 @@ class City:
     name: str
     enabled: bool = True
     province: str = ""
+    # Site identifiers pinned by hand in cities.yml. Left empty, each collector
+    # resolves the city from the site's own location list (core/locations.py).
     olx_location_id: str | None = None
     zameen_slug: str | None = None
     pakwheels_slug: str | None = None
+    aliases: tuple[str, ...] = ()
+    lat: float | None = None
+    lon: float | None = None
+    # Build-time snapshot of which sites have this city: {"olx": True, ...}.
+    # A hint for the picker only - runs always resolve live.
+    coverage: dict = field(default_factory=dict, compare=False, hash=False)
 
     def slug_for(self, source: str) -> str | None:
-        """The site-specific identifier, or None if it must be resolved live."""
-        if source == "olx":
-            return self.olx_location_id
-        if source == "zameen":
-            return self.zameen_slug
-        if source == "pakwheels":
-            return self.pakwheels_slug or city_slug(self.name)
-        return None
+        """An identifier pinned in cities.yml, or None to resolve it live."""
+        return {
+            "olx": self.olx_location_id,
+            "zameen": self.zameen_slug,
+            "pakwheels": self.pakwheels_slug,
+        }.get(source)
+
+    @property
+    def keys(self) -> set[str]:
+        return city_keys(self.name, self.aliases)
 
 
 @dataclass(frozen=True)
@@ -156,20 +167,39 @@ class Config:
 
     # ------------------------------------------------------------- selection
 
+    def find_city(self, name: str) -> City | None:
+        """A city by name, else by alias - spelling-insensitively.
+
+        A city's own name always beats another city's alias: Kotli Loharan
+        answers to "Kotli" only because OLX spells it that way, but asking for
+        "Kotli" must still give the Azad Kashmir city of that name.
+        """
+        key = match_key(name)
+        by_name = next((c for c in self.cities if match_key(c.name) == key), None)
+        return by_name or next((c for c in self.cities if key in c.keys), None)
+
     def enabled_cities(self, only: list[str] | None = None) -> list[City]:
-        """Cities to process, optionally narrowed by name (case-insensitive)."""
-        cities = [c for c in self.cities if c.enabled]
-        if only:
-            wanted = {name.strip().lower() for name in only}
-            known = {c.name.lower() for c in self.cities}
-            unknown = wanted - known
-            if unknown:
-                raise ValueError(
-                    f"unknown cities: {', '.join(sorted(unknown))}. "
-                    f"Add them to config/cities.yml first."
-                )
-            cities = [c for c in self.cities if c.name.lower() in wanted]
-        return cities
+        """Cities to process, optionally narrowed by name or alias."""
+        if not only:
+            return [c for c in self.cities if c.enabled]
+
+        chosen: list[City] = []
+        unknown: list[str] = []
+        for name in only:
+            city = self.find_city(name)
+            if city is None:
+                unknown.append(name.strip())
+            elif city not in chosen:
+                chosen.append(city)
+        if unknown:
+            raise ValueError(
+                f"unknown cities: {', '.join(sorted(unknown))}. "
+                f"They are not in config/pakistan_cities.json - add one under "
+                f"`cities:` in config/cities.yml to use it."
+            )
+        # Keep the master list's order (busiest cities first) so a run does not
+        # depend on the order the caller happened to list them in.
+        return [c for c in self.cities if c in chosen]
 
     def enabled_sources(self, only: list[str] | None = None) -> list[Source]:
         sources = [s for s in self.sources.values() if s.enabled]
@@ -188,8 +218,73 @@ def _require(mapping: dict[str, Any], key: str, where: str) -> Any:
     return mapping[key]
 
 
+def _pinned(entry: dict, key: str) -> str | None:
+    value = entry.get(key)
+    return str(value) if value is not None else None
+
+
+def _load_cities(config_dir: Path, overrides_raw: list[dict]) -> list[City]:
+    """Master list + cities.yml overrides, master order preserved."""
+    dataset_file = config_dir / "pakistan_cities.json"
+    records: list[dict] = []
+    if dataset_file.exists():
+        records = json.loads(dataset_file.read_text(encoding="utf-8")).get("cities", [])
+
+    overrides = [(city_keys(_require(e, "name", "cities.yml"), e.get("aliases") or []), e)
+                 for e in overrides_raw]
+    used: set[int] = set()
+
+    def override_for(keys: set[str]) -> dict:
+        for index, (ov_keys, entry) in enumerate(overrides):
+            if ov_keys & keys:
+                used.add(index)
+                return entry
+        return {}
+
+    cities: list[City] = []
+    for rec in records:
+        aliases = tuple(rec.get("aliases") or [])
+        ov = override_for(city_keys(rec["name"], aliases))
+        cities.append(
+            City(
+                name=rec["name"],
+                enabled=ov.get("enabled", True),
+                province=ov.get("province", rec.get("province", "")),
+                olx_location_id=_pinned(ov, "olx_location_id"),
+                zameen_slug=ov.get("zameen_slug"),
+                pakwheels_slug=ov.get("pakwheels_slug"),
+                aliases=aliases + tuple(ov.get("aliases") or []),
+                lat=rec.get("lat"),
+                lon=rec.get("lon"),
+                coverage=dict(rec.get("coverage") or {}),
+            )
+        )
+
+    # A cities.yml entry the master list does not know is a city of its own.
+    for index, (_, entry) in enumerate(overrides):
+        if index in used:
+            continue
+        cities.append(
+            City(
+                name=entry["name"],
+                enabled=entry.get("enabled", True),
+                province=entry.get("province", ""),
+                olx_location_id=_pinned(entry, "olx_location_id"),
+                zameen_slug=entry.get("zameen_slug"),
+                pakwheels_slug=entry.get("pakwheels_slug"),
+                aliases=tuple(entry.get("aliases") or []),
+            )
+        )
+    return cities
+
+
 def load_config(root: Path | str | None = None) -> Config:
-    """Read config/cities.yml and config/settings.yml under `root`."""
+    """Read the city list and config/settings.yml under `root`.
+
+    Cities come from config/pakistan_cities.json (the master list, built by
+    scripts/build_pakistan_cities.py). config/cities.yml is a small override
+    file on top: disable a city, pin a site identifier, add a one-off place.
+    """
     root = Path(root) if root else Path(__file__).resolve().parent.parent
     config_dir = root / "config"
 
@@ -202,23 +297,9 @@ def load_config(root: Path | str | None = None) -> Config:
     cities_raw = yaml.safe_load(cities_file.read_text(encoding="utf-8")) or {}
     settings_raw = yaml.safe_load(settings_file.read_text(encoding="utf-8")) or {}
 
-    cities = [
-        City(
-            name=_require(entry, "name", "cities.yml"),
-            enabled=entry.get("enabled", True),
-            province=entry.get("province", ""),
-            olx_location_id=(
-                str(entry["olx_location_id"])
-                if entry.get("olx_location_id") is not None
-                else None
-            ),
-            zameen_slug=entry.get("zameen_slug"),
-            pakwheels_slug=entry.get("pakwheels_slug"),
-        )
-        for entry in cities_raw.get("cities", [])
-    ]
+    cities = _load_cities(config_dir, cities_raw.get("cities") or [])
     if not cities:
-        raise ValueError("cities.yml defines no cities")
+        raise ValueError("no cities defined - config/pakistan_cities.json is missing and cities.yml is empty")
 
     synced = load_synced_categories(config_dir)
 

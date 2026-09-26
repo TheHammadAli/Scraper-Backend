@@ -11,6 +11,7 @@ import json
 import logging
 import random
 import time
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -28,6 +29,10 @@ RETRYABLE_STATUS = {408, 425, 429, 500, 502, 503, 504}
 
 class FetchError(RuntimeError):
     """Raised when a URL could not be fetched after all retries."""
+
+    def __init__(self, message: str, status: int | None = None):
+        super().__init__(message)
+        self.status = status  # the HTTP status, when the server answered at all
 
 
 class RobotsDisallowed(FetchError):
@@ -68,6 +73,20 @@ class HttpClient:
         # Set for a run that must see the live page - asking for "today's ads"
         # against a page cached yesterday would return nothing.
         self.skip_cache = False
+
+    @contextmanager
+    def cached_lookup(self):
+        """Allow the cache inside the block even when skip_cache is set.
+
+        A "today" run must see live listing pages, but the site's city list
+        (hundreds of KB, unchanged for weeks) has no reason to be re-fetched.
+        """
+        previous = self.skip_cache
+        self.skip_cache = False
+        try:
+            yield
+        finally:
+            self.skip_cache = previous
 
     # ---------------------------------------------------------------- robots
 
@@ -194,11 +213,50 @@ class HttpClient:
                                 response.status_code, url)
                 elif response.status_code >= 400:
                     # 404/403 etc. are not going to improve on retry.
-                    raise FetchError(f"HTTP {response.status_code} for {url}")
+                    raise FetchError(f"HTTP {response.status_code} for {url}", response.status_code)
                 else:
                     result = Response(url=url, status=response.status_code, text=response.text)
                     self._write_cache(result)
                     return result
+
+            if attempt < self.settings.max_retries:
+                time.sleep(self.settings.backoff_base_seconds * (2 ** (attempt - 1)))
+
+        raise FetchError(f"giving up on {url} after {self.settings.max_retries} attempts: {last_error}")
+
+    def peek(self, url: str, *, marker: str = "</title>", max_bytes: int = 65536) -> Response:
+        """Fetch only the start of a page, up to and including `marker`.
+
+        For checks that need a page's <title> and nothing else - it costs the
+        site ~20 KB instead of a full page. Same robots.txt and rate limits as
+        get(); never cached, since the caller is asking a question about the
+        page right now.
+        """
+        if not self.allowed(url):
+            raise RobotsDisallowed(f"robots.txt disallows {url}")
+
+        host = urlsplit(url).netloc
+        needle = marker.lower().encode()
+        last_error: Exception | None = None
+
+        for attempt in range(1, self.settings.max_retries + 1):
+            self._throttle(host)
+            try:
+                with self.session.get(url, timeout=self.settings.timeout_seconds, stream=True) as r:
+                    if r.status_code in RETRYABLE_STATUS:
+                        last_error = FetchError(f"HTTP {r.status_code} for {url}")
+                    elif r.status_code >= 400:
+                        raise FetchError(f"HTTP {r.status_code} for {url}", r.status_code)
+                    else:
+                        buffer = b""
+                        for chunk in r.iter_content(4096):
+                            buffer += chunk
+                            if needle in buffer.lower() or len(buffer) >= max_bytes:
+                                break
+                        return Response(url=url, status=r.status_code,
+                                        text=buffer.decode(r.encoding or "utf-8", errors="replace"))
+            except requests.RequestException as exc:
+                last_error = exc
 
             if attempt < self.settings.max_retries:
                 time.sleep(self.settings.backoff_base_seconds * (2 ** (attempt - 1)))

@@ -2,20 +2,25 @@
 
 PakWheels pages are server-rendered and carry schema.org markup, so JSON-LD is
 the primary extraction path with CSS selectors as the fallback. City slugs go
-straight into the URL (`ct_lahore`), so no location lookup is needed.
+straight into the URL (`ct_lahore`) - but PakWheels does not reject a slug it
+does not know: it answers HTTP 200 with all-Pakistan results. So every slug is
+checked against the page title before it is used (see lookup_city).
 """
 
 from __future__ import annotations
 
 import itertools
+import json
 import logging
 import re
+from datetime import datetime, timedelta, timezone
 from typing import Iterator
 
 from core.config import Category, City
-from core.http import Response
+from core.http import FetchError, Response
+from core.locations import LocationResult, match_key, pakwheels_page_city, url_slug
 from core.models import Listing
-from core.normalize import city_slug, clean_text, parse_ad_date, parse_price
+from core.normalize import clean_text, parse_ad_date, parse_price
 
 from scrapers.base import (
     BaseCollector,
@@ -31,6 +36,9 @@ log = logging.getLogger(__name__)
 # /used-cars/kia-sportage-2021-for-sale-in-lahore-12017889
 # The ad id is the trailing number on the slug, not a separate path segment.
 AD_HREF = re.compile(r"/(?:used-cars|used-bikes)/[^/?#]*?-(\d{5,})(?:[/?#]|$)", re.I)
+
+# ...-for-sale-in-<city>-<id>: the city an ad is in, as PakWheels writes it.
+AD_CITY = re.compile(r"-for-sale-in-(.+?)-\d{5,}(?:[/?#]|$)", re.I)
 
 # The seller's text sits in the div immediately after the "Seller's Comments"
 # heading, not inside it.
@@ -73,9 +81,80 @@ class PakWheelsCollector(BaseCollector):
 
     # ------------------------------------------------------------- city lookup
 
-    def lookup_city(self, city: City) -> str | None:
-        """PakWheels city slugs are just the lowercased name."""
-        return city_slug(city.name)
+    PROBE_TTL = timedelta(days=30)
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._probe_path = self.config.cache_dir / "pakwheels_cities.json"
+        self._probes: dict[str, dict] = self._load_probes()
+
+    def _load_probes(self) -> dict[str, dict]:
+        try:
+            return json.loads(self._probe_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return {}
+
+    def _save_probes(self) -> None:
+        try:
+            self._probe_path.parent.mkdir(parents=True, exist_ok=True)
+            self._probe_path.write_text(
+                json.dumps(self._probes, indent=1, sort_keys=True), encoding="utf-8"
+            )
+        except OSError as exc:
+            log.debug("could not persist PakWheels city probes: %s", exc)
+
+    def _remember(self, key: str, slug: str | None) -> None:
+        self._probes[key] = {"slug": slug, "at": datetime.now(timezone.utc).isoformat()}
+        self._save_probes()
+
+    def lookup_city(self, city: City) -> LocationResult:
+        """Find the `ct_` slug PakWheels actually accepts for the city.
+
+        Tries the city's name, then its aliases, and keeps the first slug whose
+        page is scoped to that city ('Cars for sale in <City>'). The answer -
+        including "PakWheels does not have it" - is remembered for 30 days, so a
+        city costs one small request once, not one per run.
+        """
+        key = match_key(city.name)
+        cached = self._probes.get(key)
+        if cached:
+            age = datetime.now(timezone.utc) - datetime.fromisoformat(cached["at"])
+            if age < self.PROBE_TTL:
+                if cached["slug"]:
+                    return LocationResult.resolved(cached["slug"], matched=cached["slug"])
+                return LocationResult.unsupported(f"PakWheels has no listings page for {city.name}")
+
+        slugs = list(dict.fromkeys(url_slug(n) for n in (city.name, *city.aliases)))[:4]
+        for slug in slugs:
+            try:
+                html = self.http.peek(f"{self.base_url}/used-cars/search/-/ct_{slug}/?page=1").text
+            except FetchError as exc:
+                # A 4xx just means this spelling is not a page - try the next.
+                # Anything else (network, 5xx, robots) means the check itself
+                # could not be made, so nothing is recorded about the city.
+                if exc.status is not None and 400 <= exc.status < 500 and exc.status != 429:
+                    continue
+                raise
+            scoped = pakwheels_page_city(html)
+            if scoped and match_key(scoped) in city.keys:
+                self._remember(key, slug)
+                return LocationResult.resolved(slug, matched=scoped)
+
+        self._remember(key, None)
+        return LocationResult.unsupported(f"PakWheels has no listings page for {city.name}")
+
+    def validate_index(self, response: Response, city: City, category: Category) -> str | None:
+        """The bikes (or any other) page must be scoped to the city too - the
+        cars-page probe above says nothing about them."""
+        scoped = pakwheels_page_city(response.text)
+        if scoped is None or match_key(scoped) not in city.keys:
+            served = "all-Pakistan" if scoped is None else scoped
+            return (
+                f"PakWheels served {served} results for {city.name} / {category.label}, "
+                f"not {city.name} listings - skipped so other cities' ads are not filed "
+                f"under {city.name}"
+            )
+        return None
 
     # ---------------------------------------------------------------- indexing
 
@@ -126,6 +205,9 @@ class PakWheelsCollector(BaseCollector):
                 title=title,
                 url=url,
             )
+            in_url = AD_CITY.search(href)
+            if in_url:
+                listing.located_in = (in_url.group(1).replace("-", " "),)
 
             # Take the price from the index so a failed detail fetch still
             # leaves a usable row.

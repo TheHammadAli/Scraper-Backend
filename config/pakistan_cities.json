@@ -1,0 +1,3649 @@
+{
+ "_meta": {
+  "generated": "2026-09-26",
+  "count": 270,
+  "sources": [
+   "GeoNames (cities5000, https://www.geonames.org) - CC BY 4.0",
+   "OLX Pakistan locations sitemap",
+   "Zameen.com city list"
+  ],
+  "attribution": "Place names, provinces and coordinates in part from GeoNames (https://www.geonames.org), licensed CC BY 4.0.",
+  "coverage_note": "coverage.<site> is a snapshot at build time (true/false); null means not checked. Runs always resolve live.",
+  "dropped_uncovered": [
+   "Bhawana",
+   "Talhar",
+   "Dajal",
+   "Qadirpur Ran",
+   "Garhi Khairo",
+   "Shujaabad",
+   "Tordher",
+   "Manjhand",
+   "Taunsa",
+   "Qubo Saeed Khan",
+   "Kandhkot",
+   "Khurarianwala",
+   "Thul",
+   "Fort Abbas",
+   "Alahabad",
+   "Kahna Nau",
+   "Kambar",
+   "Zahir Pir",
+   "Rabwah",
+   "Kot Malik Barkhurdar",
+   "Chuhar Kana",
+   "Minchinabad",
+   "Faruka",
+   "Jahangira",
+   "Dullewala",
+   "Pir Jo Goth",
+   "Pabbi",
+   "Lalian",
+   "Qabula",
+   "Kot Mumin",
+   "Lakki",
+   "Gahkuch",
+   "Athhmuqam"
+  ]
+ },
+ "cities": [
+  {
+   "name": "Lahore",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.558,
+   "lon": 74.3507,
+   "population": 13004135,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Karachi",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 24.8608,
+   "lon": 67.0104,
+   "population": 11624219,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Peshawar",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.008,
+   "lon": 71.5785,
+   "population": 4758762,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Faisalabad",
+   "province": "Punjab",
+   "aliases": [
+    "Lyallpur"
+   ],
+   "lat": 31.4155,
+   "lon": 73.0897,
+   "population": 3800193,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Rawalpindi",
+   "province": "Punjab",
+   "aliases": [
+    "Pindi"
+   ],
+   "lat": 33.5973,
+   "lon": 73.0479,
+   "population": 3357612,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Gujranwala",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.1557,
+   "lon": 74.187,
+   "population": 2511118,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Multan",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.1968,
+   "lon": 71.4782,
+   "population": 2169915,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Hyderabad",
+   "province": "Sindh",
+   "aliases": [
+    "Hyderabad Sindh"
+   ],
+   "lat": 25.3969,
+   "lon": 68.3772,
+   "population": 1921275,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Quetta",
+   "province": "Balochistan",
+   "aliases": [
+    "Kwatah"
+   ],
+   "lat": 30.1841,
+   "lon": 67.0014,
+   "population": 1565546,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Bannu",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 32.9853,
+   "lon": 70.604,
+   "population": 1357890,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sargodha",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.0859,
+   "lon": 72.6742,
+   "population": 975886,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sialkot",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.4927,
+   "lon": 74.5313,
+   "population": 911817,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Bahawalpur",
+   "province": "Punjab",
+   "aliases": [
+    "Bahawalpur City"
+   ],
+   "lat": 29.3978,
+   "lon": 71.6752,
+   "population": 903795,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Dera Ismail Khan",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [
+    "D.I. Khan",
+    "DI Khan"
+   ],
+   "lat": 31.8313,
+   "lon": 70.9017,
+   "population": 763195,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Muzaffarabad",
+   "province": "Azad Jammu & Kashmir",
+   "aliases": [],
+   "lat": 34.37,
+   "lon": 73.4708,
+   "population": 725000,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Battagram",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [
+    "Batagram"
+   ],
+   "lat": 34.6772,
+   "lon": 73.0233,
+   "population": 700000,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Chunian",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.9662,
+   "lon": 73.9791,
+   "population": 634236,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Jhang",
+   "province": "Punjab",
+   "aliases": [
+    "Jhang Sadar",
+    "Jhang Sadr"
+   ],
+   "lat": 31.2698,
+   "lon": 72.3169,
+   "population": 606533,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Islamabad",
+   "province": "Islamabad Capital Territory",
+   "aliases": [
+    "ICT"
+   ],
+   "lat": 33.7215,
+   "lon": 73.0433,
+   "population": 601600,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sheikhupura",
+   "province": "Punjab",
+   "aliases": [
+    "Sheikhupura City",
+    "Shekhupura"
+   ],
+   "lat": 31.7129,
+   "lon": 73.9856,
+   "population": 591424,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Gujrat",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.5742,
+   "lon": 74.0754,
+   "population": 574240,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sukkur",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 27.7032,
+   "lon": 68.8589,
+   "population": 563851,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sahiwal",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.6659,
+   "lon": 73.1019,
+   "population": 538344,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Okara",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.8103,
+   "lon": 73.4515,
+   "population": 533693,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Rahim Yar Khan",
+   "province": "Punjab",
+   "aliases": [
+    "RYK"
+   ],
+   "lat": 28.4199,
+   "lon": 70.3034,
+   "population": 517000,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kasur",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.1187,
+   "lon": 74.4502,
+   "population": 510875,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Jalalpur Pirwala",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 29.5051,
+   "lon": 71.222,
+   "population": 500000,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Dera Ghazi Khan",
+   "province": "Punjab",
+   "aliases": [
+    "D.G. Khan",
+    "DG Khan"
+   ],
+   "lat": 30.0459,
+   "lon": 70.6403,
+   "population": 494464,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Pindi Bhattian",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.8984,
+   "lon": 73.2734,
+   "population": 493222,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Tando Bago",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 24.7891,
+   "lon": 68.9654,
+   "population": 426535,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Tando Allahyar",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.4605,
+   "lon": 68.7174,
+   "population": 421923,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Wah",
+   "province": "Punjab",
+   "aliases": [
+    "Wah Cantonment",
+    "Wah Cantt"
+   ],
+   "lat": 33.7709,
+   "lon": 72.7512,
+   "population": 400733,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Larkana",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 27.559,
+   "lon": 68.212,
+   "population": 364033,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Nawabshah",
+   "province": "Sindh",
+   "aliases": [
+    "Shaheed Benazirabad"
+   ],
+   "lat": 26.2394,
+   "lon": 68.4037,
+   "population": 363138,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Burewala",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.1667,
+   "lon": 72.65,
+   "population": 361664,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mingora",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [
+    "Mingaora"
+   ],
+   "lat": 34.7795,
+   "lon": 72.3627,
+   "population": 361112,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sinjhoro",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 26.0301,
+   "lon": 68.8087,
+   "population": 354709,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Hafizabad",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.071,
+   "lon": 73.688,
+   "population": 318621,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Chiniot",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.7209,
+   "lon": 72.9784,
+   "population": 318165,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mardan",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.1979,
+   "lon": 72.0496,
+   "population": 300424,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kamoke",
+   "province": "Punjab",
+   "aliases": [
+    "Kamoki"
+   ],
+   "lat": 31.9753,
+   "lon": 74.223,
+   "population": 292023,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Abbottabad",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.1463,
+   "lon": 73.2117,
+   "population": 275890,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sadiqabad",
+   "province": "Punjab",
+   "aliases": [
+    "Saddiqabad"
+   ],
+   "lat": 28.3091,
+   "lon": 70.1265,
+   "population": 274210,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mirpur Khas",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.5276,
+   "lon": 69.0126,
+   "population": 267833,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Skardu",
+   "province": "Gilgit-Baltistan",
+   "aliases": [],
+   "lat": 35.2979,
+   "lon": 75.6337,
+   "population": 260000,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Muridke",
+   "province": "Punjab",
+   "aliases": [
+    "Muridike"
+   ],
+   "lat": 31.8026,
+   "lon": 74.2577,
+   "population": 254291,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Shahkot",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.5709,
+   "lon": 73.4853,
+   "population": 244868,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Bahawalnagar",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.5508,
+   "lon": 73.3908,
+   "population": 241873,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kunri",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.1787,
+   "lon": 69.5657,
+   "population": 237063,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Muzaffargarh",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.0726,
+   "lon": 71.1938,
+   "population": 235541,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Digri",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.1566,
+   "lon": 69.111,
+   "population": 234578,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Jacobabad",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 28.2819,
+   "lon": 68.4376,
+   "population": 219315,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Khuzdar",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 27.8119,
+   "lon": 66.611,
+   "population": 218112,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Gilgit",
+   "province": "Gilgit-Baltistan",
+   "aliases": [
+    "Gilgit City"
+   ],
+   "lat": 35.9187,
+   "lon": 74.3124,
+   "population": 216760,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Gojra",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.1493,
+   "lon": 72.6832,
+   "population": 214000,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Shikarpur",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 27.9556,
+   "lon": 68.6382,
+   "population": 204938,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Dadu",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 26.7303,
+   "lon": 67.7769,
+   "population": 201017,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Ahmadpur East",
+   "province": "Punjab",
+   "aliases": [
+    "Ahmedpur East"
+   ],
+   "lat": 29.1427,
+   "lon": 71.2577,
+   "population": 196718,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Hub",
+   "province": "Balochistan",
+   "aliases": [
+    "Hub Chowki"
+   ],
+   "lat": 25.0255,
+   "lon": 66.8853,
+   "population": 195661,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Dhirkot",
+   "province": "Azad Jammu & Kashmir",
+   "aliases": [],
+   "lat": 34.0392,
+   "lon": 73.5769,
+   "population": 195000,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Khairpur",
+   "province": "Sindh",
+   "aliases": [
+    "Khairpur Mir's",
+    "Khairpur Mirs"
+   ],
+   "lat": 27.5295,
+   "lon": 68.7592,
+   "population": 191044,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Jhelum",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.9345,
+   "lon": 73.731,
+   "population": 190425,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Tando Adam",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.7682,
+   "lon": 68.662,
+   "population": 174291,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Hasilpur",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 29.6922,
+   "lon": 72.5457,
+   "population": 168146,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kamalia",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.7271,
+   "lon": 72.6461,
+   "population": 166617,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Jampur",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 29.6424,
+   "lon": 70.5952,
+   "population": 155243,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Wazirabad",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.4432,
+   "lon": 74.12,
+   "population": 152624,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kohat",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 33.582,
+   "lon": 71.4493,
+   "population": 151427,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Layyah",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.9613,
+   "lon": 70.939,
+   "population": 151274,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Eminabad",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.0424,
+   "lon": 74.26,
+   "population": 150646,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Jaranwala",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.3332,
+   "lon": 73.4187,
+   "population": 150380,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Chishtian",
+   "province": "Punjab",
+   "aliases": [
+    "Chishtian Mandi"
+   ],
+   "lat": 29.7971,
+   "lon": 72.8577,
+   "population": 149939,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Haroonabad",
+   "province": "Punjab",
+   "aliases": [
+    "Harunabad"
+   ],
+   "lat": 29.6121,
+   "lon": 73.138,
+   "population": 149679,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Jalalpur Jattan",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.6412,
+   "lon": 74.2056,
+   "population": 146743,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Umerkot",
+   "province": "Sindh",
+   "aliases": [
+    "Umarkot"
+   ],
+   "lat": 25.3633,
+   "lon": 69.7418,
+   "population": 144558,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Lodhran",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 29.5339,
+   "lon": 71.6324,
+   "population": 144512,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Moro",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 26.6632,
+   "lon": 68.0002,
+   "population": 142685,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Khanpur",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 28.6474,
+   "lon": 70.6569,
+   "population": 142426,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Attock",
+   "province": "Punjab",
+   "aliases": [
+    "Attock City"
+   ],
+   "lat": 33.7667,
+   "lon": 72.3598,
+   "population": 141945,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mian Channu",
+   "province": "Punjab",
+   "aliases": [
+    "Mian Channun",
+    "Mian Chunnu"
+   ],
+   "lat": 30.4407,
+   "lon": 72.3568,
+   "population": 140112,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Bhakkar",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.6269,
+   "lon": 71.0647,
+   "population": 131658,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Narowal",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.102,
+   "lon": 74.873,
+   "population": 130692,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Chaman",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 30.9177,
+   "lon": 66.4526,
+   "population": 130139,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Nankana Sahib",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.4501,
+   "lon": 73.7065,
+   "population": 130041,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mandi Bahauddin",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.587,
+   "lon": 73.4912,
+   "population": 129733,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mianwali",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.5776,
+   "lon": 71.5285,
+   "population": 129500,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Daur",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 26.4553,
+   "lon": 68.3183,
+   "population": 128958,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Daska",
+   "province": "Punjab",
+   "aliases": [
+    "Daska Kalan"
+   ],
+   "lat": 32.3242,
+   "lon": 74.3504,
+   "population": 126924,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Shakargarh",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.2636,
+   "lon": 75.1601,
+   "population": 126742,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Pakpattan",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.3431,
+   "lon": 73.3894,
+   "population": 126706,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Mailsi",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 29.8012,
+   "lon": 72.174,
+   "population": 125431,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Dokri",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 27.3742,
+   "lon": 68.0971,
+   "population": 125000,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mirpur",
+   "province": "Azad Jammu & Kashmir",
+   "aliases": [
+    "Mirpur AJK",
+    "Mirpur Azad Kashmir",
+    "New Mirpur City"
+   ],
+   "lat": 33.1478,
+   "lon": 73.7519,
+   "population": 124352,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Toba Tek Singh",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.9713,
+   "lon": 72.4827,
+   "population": 123102,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Haveli Lakha",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.451,
+   "lon": 73.6937,
+   "population": 122389,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Shahdad Kot",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 27.8473,
+   "lon": 67.9068,
+   "population": 120687,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Charsadda",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.1482,
+   "lon": 71.7406,
+   "population": 120170,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Ghotki",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 28.0044,
+   "lon": 69.3157,
+   "population": 119879,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sambrial",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.4783,
+   "lon": 74.3534,
+   "population": 119571,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Badin",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 24.656,
+   "lon": 68.837,
+   "population": 117455,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Phool Nagar",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.2024,
+   "lon": 73.9486,
+   "population": 114530,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Tando Muhammad Khan",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.1238,
+   "lon": 68.5368,
+   "population": 114406,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Pattoki",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.0202,
+   "lon": 73.8533,
+   "population": 113735,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Shahdadpur",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.9254,
+   "lon": 68.6228,
+   "population": 113342,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Jauharabad",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.2902,
+   "lon": 72.2818,
+   "population": 113188,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Vehari",
+   "province": "Punjab",
+   "aliases": [
+    "Vihari"
+   ],
+   "lat": 30.0445,
+   "lon": 72.3556,
+   "population": 112840,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Chichawatni",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.5301,
+   "lon": 72.6916,
+   "population": 112191,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Dera Murad Jamali",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 28.5466,
+   "lon": 68.2231,
+   "population": 106952,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kotri",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.3657,
+   "lon": 68.3083,
+   "population": 106615,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kot Addu",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.4691,
+   "lon": 70.967,
+   "population": 104217,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sangla Hill",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.7167,
+   "lon": 73.3833,
+   "population": 103709,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kharian",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.8161,
+   "lon": 73.887,
+   "population": 103036,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Khushab",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.2967,
+   "lon": 72.3525,
+   "population": 102793,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Pasrur",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.2629,
+   "lon": 74.6633,
+   "population": 102717,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Pano Aqil",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 27.8562,
+   "lon": 69.1111,
+   "population": 102701,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Shabqadar",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.216,
+   "lon": 71.5548,
+   "population": 102340,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kot Radha Kishan",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.1707,
+   "lon": 74.1013,
+   "population": 102057,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Chakwal",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.9329,
+   "lon": 72.8539,
+   "population": 101200,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Renala Khurd",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.8788,
+   "lon": 73.5986,
+   "population": 100054,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Raja Jang",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.2208,
+   "lon": 74.2548,
+   "population": 100000,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Depalpur",
+   "province": "Punjab",
+   "aliases": [
+    "Dipalpur"
+   ],
+   "lat": 30.6698,
+   "lon": 73.6531,
+   "population": 99858,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Swabi",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.1202,
+   "lon": 72.4698,
+   "population": 97363,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Dijkot",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.2173,
+   "lon": 72.9962,
+   "population": 96934,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Gambat",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 27.3517,
+   "lon": 68.5215,
+   "population": 93884,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Rohri",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 27.692,
+   "lon": 68.895,
+   "population": 92135,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kabirwala",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.4047,
+   "lon": 71.8627,
+   "population": 91932,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kunjah",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.5298,
+   "lon": 73.9749,
+   "population": 90905,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Daharki",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 28.0536,
+   "lon": 69.7025,
+   "population": 90177,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Dinga",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.641,
+   "lon": 73.7204,
+   "population": 89922,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Nowshera",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [
+    "Nowshera Cantonment",
+    "Nowshera Kalan"
+   ],
+   "lat": 34.0191,
+   "lon": 71.9745,
+   "population": 88003,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Rato Dero",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 27.8023,
+   "lon": 68.289,
+   "population": 81935,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Fateh Jang",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 33.5649,
+   "lon": 72.6428,
+   "population": 81321,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Khewra",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.6491,
+   "lon": 73.0106,
+   "population": 80000,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Talagang",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.9277,
+   "lon": 72.4159,
+   "population": 79431,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Hujra Shah Muqeem",
+   "province": "Punjab",
+   "aliases": [
+    "Hujra Shah Muqim"
+   ],
+   "lat": 30.7417,
+   "lon": 73.8233,
+   "population": 76462,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Paharpur",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 32.105,
+   "lon": 70.9706,
+   "population": 76027,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Turbat",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 26.0012,
+   "lon": 63.0485,
+   "population": 75694,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Topi",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.0703,
+   "lon": 72.6215,
+   "population": 74867,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Bhalwal",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.2658,
+   "lon": 72.8981,
+   "population": 74744,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mirpur Mathelo",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 28.0214,
+   "lon": 69.5491,
+   "population": 74651,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sarai Alamgir",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.9049,
+   "lon": 73.7552,
+   "population": 73967,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Batkhela",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.6178,
+   "lon": 71.9725,
+   "population": 73525,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Sakrand",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 26.1384,
+   "lon": 68.2744,
+   "population": 72040,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Tando Jam",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.4281,
+   "lon": 68.5292,
+   "population": 71760,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Hala",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.8146,
+   "lon": 68.422,
+   "population": 71094,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Gwadar",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 25.1216,
+   "lon": 62.3254,
+   "population": 70852,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kahror Pakka",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 29.6243,
+   "lon": 71.9144,
+   "population": 69743,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Gujar Khan",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 33.2541,
+   "lon": 73.3043,
+   "population": 69374,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Darya Khan",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.7845,
+   "lon": 71.102,
+   "population": 68622,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mansehra",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.3302,
+   "lon": 73.1968,
+   "population": 66486,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Basirpur",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.5776,
+   "lon": 73.8391,
+   "population": 65541,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Lalamusa",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.7014,
+   "lon": 73.9575,
+   "population": 65197,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Usta Muhammad",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 28.1772,
+   "lon": 68.0437,
+   "population": 64632,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sibi",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 29.543,
+   "lon": 67.8773,
+   "population": 64069,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Pindi Gheb",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 33.2409,
+   "lon": 72.2648,
+   "population": 63810,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Phalia",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.431,
+   "lon": 73.579,
+   "population": 62453,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sanghar",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 26.0469,
+   "lon": 68.9492,
+   "population": 62033,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Faqirwali",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 29.468,
+   "lon": 73.0349,
+   "population": 61586,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Yazman",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 29.1212,
+   "lon": 71.7446,
+   "population": 60738,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Chitral",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 35.8518,
+   "lon": 71.7864,
+   "population": 57157,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Haripur",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 33.9978,
+   "lon": 72.9349,
+   "population": 56977,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Jamrud",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.0015,
+   "lon": 71.3801,
+   "population": 56642,
+   "coverage": {
+    "olx": true,
+    "zameen": false,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Pir Mahal",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.7666,
+   "lon": 72.4346,
+   "population": 52476,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mithi",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 24.737,
+   "lon": 69.7971,
+   "population": 52376,
+   "coverage": {
+    "olx": true,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Ubauro",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 28.1643,
+   "lon": 69.7311,
+   "population": 50981,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Rajanpur",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 29.1041,
+   "lon": 70.3297,
+   "population": 50682,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Zhob",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 31.3408,
+   "lon": 69.4493,
+   "population": 50537,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Matli",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.0429,
+   "lon": 68.6559,
+   "population": 50398,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Jahanian",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.0393,
+   "lon": 71.8167,
+   "population": 50318,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Buni",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 36.2733,
+   "lon": 72.2593,
+   "population": 50000,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Rawalakot",
+   "province": "Azad Jammu & Kashmir",
+   "aliases": [],
+   "lat": 33.8578,
+   "lon": 73.7604,
+   "population": 50000,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kotli",
+   "province": "Azad Jammu & Kashmir",
+   "aliases": [
+    "Kotli AJK",
+    "Kotli Azad Kashmir"
+   ],
+   "lat": 33.5184,
+   "lon": 73.9022,
+   "population": 46907,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Thatta",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 24.7475,
+   "lon": 67.9235,
+   "population": 44302,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Tank",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 32.2171,
+   "lon": 70.3832,
+   "population": 38488,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Loralai",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 30.3705,
+   "lon": 68.5979,
+   "population": 37787,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Hangu",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 33.532,
+   "lon": 71.0595,
+   "population": 36150,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Bagh",
+   "province": "Azad Jammu & Kashmir",
+   "aliases": [],
+   "lat": 33.9811,
+   "lon": 73.7761,
+   "population": 33548,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kharan",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 28.5846,
+   "lon": 65.415,
+   "population": 30841,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Upper Dir",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 35.2074,
+   "lon": 71.8768,
+   "population": 29869,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mastung",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 29.7997,
+   "lon": 66.8455,
+   "population": 29082,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Bhimber",
+   "province": "Azad Jammu & Kashmir",
+   "aliases": [],
+   "lat": 32.9746,
+   "lon": 74.0785,
+   "population": 27636,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kalat",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 29.0266,
+   "lon": 66.5936,
+   "population": 26701,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Pishin",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 30.5818,
+   "lon": 66.9941,
+   "population": 24239,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Pallandri",
+   "province": "Azad Jammu & Kashmir",
+   "aliases": [],
+   "lat": 33.7153,
+   "lon": 73.6837,
+   "population": 23243,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Matiari",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.5971,
+   "lon": 68.4467,
+   "population": 18929,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Dera Bugti",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 29.0362,
+   "lon": 69.1585,
+   "population": 18120,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Naushahro Feroze",
+   "province": "Sindh",
+   "aliases": [
+    "Naushahro Firoz"
+   ],
+   "lat": 26.8401,
+   "lon": 68.1226,
+   "population": 17631,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Uthal",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 25.8072,
+   "lon": 66.6219,
+   "population": 16483,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Dalbandin",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 28.8885,
+   "lon": 64.4062,
+   "population": 14621,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Karak",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 33.1163,
+   "lon": 71.0935,
+   "population": 13679,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kohlu",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 29.903,
+   "lon": 69.231,
+   "population": 11089,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Barkhan",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 29.8977,
+   "lon": 69.5256,
+   "population": 8760,
+   "coverage": {
+    "olx": false,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Abdul Hakim",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.5491,
+   "lon": 72.1325,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Ali Masjid",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.0227,
+   "lon": 71.2649,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Alipur",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 29.3863,
+   "lon": 70.9182,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Arifwala",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.2933,
+   "lon": 73.0627,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Astore",
+   "province": "Gilgit-Baltistan",
+   "aliases": [],
+   "lat": 35.3182,
+   "lon": 74.8558,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Awaran",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 26.4739,
+   "lon": 65.2633,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Balakot",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.5493,
+   "lon": 73.3532,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Barnala",
+   "province": "Azad Jammu & Kashmir",
+   "aliases": [],
+   "lat": 32.8696,
+   "lon": 74.2452,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Buner",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.5169,
+   "lon": 72.5082,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Chaghi",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 29.3024,
+   "lon": 64.7041,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Chilas",
+   "province": "Gilgit-Baltistan",
+   "aliases": [],
+   "lat": 35.4193,
+   "lon": 74.0972,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Chishtian Sharif",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 29.7973,
+   "lon": 72.8573,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Choa Saidan Shah",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.7225,
+   "lon": 72.98,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Darra Adam Khel",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": null,
+   "lon": null,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": false,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Dina",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 33.0301,
+   "lon": 73.6009,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Dobian",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.1634,
+   "lon": 72.2336,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Dunyapur",
+   "province": "Punjab",
+   "aliases": [
+    "Duniya Pur"
+   ],
+   "lat": null,
+   "lon": null,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Gaddani",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 25.0855,
+   "lon": 66.7332,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Gadoon",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.186,
+   "lon": 72.6795,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Galyat",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.0583,
+   "lon": 73.4093,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Ghakhar",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.3005,
+   "lon": 74.1466,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Ghanche",
+   "province": "Gilgit-Baltistan",
+   "aliases": [],
+   "lat": 35.1669,
+   "lon": 76.3602,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Gharo",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 24.7407,
+   "lon": 67.5844,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Ghizar",
+   "province": "Gilgit-Baltistan",
+   "aliases": [],
+   "lat": 36.6916,
+   "lon": 73.5264,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Hajira",
+   "province": "Azad Jammu & Kashmir",
+   "aliases": [],
+   "lat": null,
+   "lon": null,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": false,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Harappa",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.6312,
+   "lon": 72.8657,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Hasan Abdal",
+   "province": "Punjab",
+   "aliases": [
+    "Hassan Abdal"
+   ],
+   "lat": null,
+   "lon": null,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Hazro",
+   "province": "Punjab",
+   "aliases": [
+    "Hazro City"
+   ],
+   "lat": 33.9112,
+   "lon": 72.4796,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Hunza",
+   "province": "Gilgit-Baltistan",
+   "aliases": [],
+   "lat": 36.3164,
+   "lon": 74.65,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Jamshoro",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.4169,
+   "lon": 68.2699,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Jandola",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 32.3339,
+   "lon": 70.1281,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Jatoi",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 29.5104,
+   "lon": 70.8514,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Jiwani",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": null,
+   "lon": null,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kaghan",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.7769,
+   "lon": 73.5259,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Kandiaro",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 27.06,
+   "lon": 68.2084,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Khanewal",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.3051,
+   "lon": 71.931,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Khaplu",
+   "province": "Gilgit-Baltistan",
+   "aliases": [],
+   "lat": 35.1608,
+   "lon": 76.3352,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Khipro",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 25.826,
+   "lon": 69.3773,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kohistan",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 35.3552,
+   "lon": 73.3104,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Kotli Loharan",
+   "province": "Punjab",
+   "aliases": [
+    "Kotli"
+   ],
+   "lat": null,
+   "lon": null,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Lakki Marwat",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 32.6054,
+   "lon": 70.9094,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Landi Kotal",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.1197,
+   "lon": 71.1652,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Lasbela",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 25.8395,
+   "lon": 66.6877,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Liaquatpur",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 28.9393,
+   "lon": 70.9483,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Lower Dir",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.8552,
+   "lon": 71.8633,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Malakand",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.5274,
+   "lon": 71.91,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Mangla",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 33.1058,
+   "lon": 73.6366,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mehrabpur",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 27.0989,
+   "lon": 68.4213,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Miran Shah",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 32.9828,
+   "lon": 70.1209,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mirpur Sakro",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 24.5481,
+   "lon": 67.6268,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Mitha Tiwana",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.2475,
+   "lon": 72.1085,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Murree",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 33.9174,
+   "lon": 73.3997,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Naran",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.9077,
+   "lon": 73.6492,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Nasirabad",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 26.0667,
+   "lon": 62.7144,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Neelum",
+   "province": "Azad Jammu & Kashmir",
+   "aliases": [],
+   "lat": 34.557,
+   "lon": 73.8948,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Parachinar",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 33.9065,
+   "lon": 70.0965,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Pasni",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": null,
+   "lon": null,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Pind Dadan Khan",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 32.5889,
+   "lon": 73.0431,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Poonch",
+   "province": "Azad Jammu & Kashmir",
+   "aliases": [],
+   "lat": 33.7745,
+   "lon": 74.0945,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Qazi Ahmed",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 26.2982,
+   "lon": 68.1023,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Raiwind",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.2473,
+   "lon": 74.2157,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Safdar Abad",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": null,
+   "lon": null,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": false,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Samundri",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 31.0663,
+   "lon": 72.9497,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sehwan",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 26.4199,
+   "lon": 67.8591,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Shahpur Chakar",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 26.1559,
+   "lon": 68.6511,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Shangla",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.8885,
+   "lon": 72.5989,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Shehr Sultan",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 29.5753,
+   "lon": 71.0171,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Sher Garh",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.8313,
+   "lon": 73.7349,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Shorkot",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 30.8317,
+   "lon": 72.0764,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sohawa",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": null,
+   "lon": null,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": false,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Sudhnoti",
+   "province": "Azad Jammu & Kashmir",
+   "aliases": [],
+   "lat": 33.6929,
+   "lon": 73.6994,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Sujawal",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 24.6051,
+   "lon": 68.0775,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Swat",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.807,
+   "lon": 72.3554,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Taxila",
+   "province": "Punjab",
+   "aliases": [],
+   "lat": 33.7486,
+   "lon": 72.8103,
+   "population": 0,
+   "coverage": {
+    "olx": true,
+    "zameen": true,
+    "pakwheels": true
+   }
+  },
+  {
+   "name": "Tharparkar",
+   "province": "Sindh",
+   "aliases": [],
+   "lat": 24.8343,
+   "lon": 69.9686,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Torkham",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 34.1218,
+   "lon": 71.1026,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Wana",
+   "province": "Khyber Pakhtunkhwa",
+   "aliases": [],
+   "lat": 32.2954,
+   "lon": 69.576,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": false
+   }
+  },
+  {
+   "name": "Winder",
+   "province": "Balochistan",
+   "aliases": [],
+   "lat": 25.3999,
+   "lon": 66.6547,
+   "population": 0,
+   "coverage": {
+    "olx": false,
+    "zameen": true,
+    "pakwheels": true
+   }
+  }
+ ]
+}
